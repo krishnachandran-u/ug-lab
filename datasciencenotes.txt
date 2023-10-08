@@ -1,1 +1,4 @@
+To convert the day of an year to date and time format
+day_of_year = pd.to_datetime(pumpkins['Date']).apply(lambda dt: (dt-datetime(dt.year,1,1)).days)
+
 
