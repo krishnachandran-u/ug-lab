@@ -1,3 +1,9 @@
+/*
+    author: https://codeforces.com/profile/krishnachandran
+    text-editor: NVIM v0.9.1
+    compiler: gcc 11.4.0
+*/
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
