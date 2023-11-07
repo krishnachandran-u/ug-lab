@@ -84,4 +84,177 @@ int main(){
     return 0;
 }
 
+/*
 
+n: 5
+1.push(x)
+2.pop
+3.display
+4.exi
+1
+x: 5
+1.push(x)
+2.pop
+3.display
+4.exi
+1
+x: 6
+1.push(x)
+2.pop
+3.display
+4.exi
+3
+5  6  
+1.push(x)
+2.pop
+3.display
+4.exi
+1
+x: 7
+1.push(x)
+2.pop
+3.display
+4.exi
+3
+5  6  7  
+1.push(x)
+2.pop
+3.display
+4.exi
+1
+x: 8
+1.push(x)
+2.pop
+3.display
+4.exi
+1 
+x: 3
+1.push(x)
+2.pop
+3.display
+4.exi
+3
+5  6  7  8  3  
+1.push(x)
+2.pop
+3.display
+4.exi
+1
+x: 3
+overflow1.push(x)
+2.pop
+3.display
+4.exi
+2
+1.push(x)
+2.pop
+3.display
+4.exi
+3
+6  7  8  3  
+1.push(x)
+2.pop
+3.display
+4.exi
+1
+x: 8
+1.push(x)
+2.pop
+3.display
+4.exi
+3
+6  7  8  3  8  
+1.push(x)
+2.pop
+3.display
+4.exi
+3
+6  7  8  3  8  
+1.push(x)
+2.pop
+3.display
+4.exi
+2
+1.push(x)
+2.pop
+3.display
+4.exi
+3
+7  8  3  8  
+1.push(x)
+2.pop
+3.display
+4.exi
+1
+x: 9
+1.push(x)
+2.pop
+3.display
+4.exi
+3
+7  8  3  8  9  
+1.push(x)
+2.pop
+3.display
+4.exi
+2
+1.push(x)
+2.pop
+3.display
+4.exi
+2
+1.push(x)
+2.pop
+3.display
+4.exi
+3
+3  8  9  
+1.push(x)
+2.pop
+3.display
+4.exi
+2
+1.push(x)
+2.pop
+3.display
+4.exi
+2
+1.push(x)
+2.pop
+3.display
+4.exi
+2
+1.push(x)
+2.pop
+3.display
+4.exi
+3
+
+1.push(x)
+2.pop
+3.display
+4.exi
+1
+x: 3
+1.push(x)
+2.pop
+3.display
+4.exi
+3
+3  
+1.push(x)
+2.pop
+3.display
+4.exi
+2
+1.push(x)
+2.pop
+3.display
+4.exi
+2
+underlow1.push(x)
+2.pop
+3.display
+4.exi
+
+*/
