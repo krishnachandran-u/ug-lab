@@ -182,6 +182,7 @@ int main(){
     LL *ll = (LL*)malloc(sizeof(LL));
     init(ll);
     int x, k, ch;
+    printf("1.insertBegin(ll, x)\n2.insertEnd(ll, x)\n3.insertAtPos(ll, x, k)\n4.deleteBegin(ll)\n5.deleteEnd(ll)\n6.deleteAtPos(ll, k)\n7.display(ll)\n8.exit()\n");
     while(true){
         printf("ch: "); scanf("%d", &ch);
         switch(ch){
