@@ -2,6 +2,7 @@
 *.class
 *.jar
 *.war
+*.out
 
 # Ignore build directories
 target/
