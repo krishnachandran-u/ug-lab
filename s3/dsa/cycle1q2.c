@@ -1,111 +1,79 @@
 #include <stdio.h>
 
-#define MAX 100
+struct Tuple {
+    int row;
+    int col;
+    int val;
+};
 
-void insert(int data[MAX][3], int *len, int r, int c, int val) {
-    data[*len][0] = r;
-    data[*len][1] = c;
-    data[*len][2] = val;
-    (*len)++;
+typedef struct Tuple Tuple;
+
+struct SparseMatrix { 
+    Tuple tuple[100];
+    int m;
+    int n;
+    int length;
+};
+
+typedef struct SparseMatrix SparseMatrix;
+
+void initSparseMatrix(SparseMatrix* sm, int m, int n) {
+    sm->m = m; 
+    sm->n = n;
+    sm->length = 0;
+    return;
 }
 
-void add(int a[MAX][3], int alen, int b[MAX][3], int blen, int row, int col) {
-    int apos = 0, bpos = 0;
-    int result[MAX][3];
-    int reslen = 0;
+void displaySparseMatrix(SparseMatrix* sm) {
+    printf("row        col        value\n");
+    for(int i = 0; i < sm->length; i++){
+        printf("%d        %d        %d\n", sm->tuple[i].row, sm->tuple[i].col, sm->tuple[i].value);
+    }
+    printf("\n");
+}
 
-    while (apos < alen && bpos < blen) {
-        if (a[apos][0] > b[bpos][0] ||
-           (a[apos][0] == b[bpos][0] &&
-            a[apos][1] > b[bpos][1])) {
-            insert(result, &reslen, b[bpos][0], b[bpos][1], b[bpos][2]);
-            bpos++;
-        } else if (a[apos][0] < b[bpos][0] ||
-                   (a[apos][0] == b[bpos][0] &&
-                    a[apos][1] < b[bpos][1])) {
-            insert(result, &reslen, a[apos][0], a[apos][1], a[apos][2]);
-            apos++;
-        } else {
-            int addedval = a[apos][2] + b[bpos][2];
-            if (addedval != 0)
-                insert(result, &reslen, a[apos][0], a[apos][1], addedval);
-            apos++;
-            bpos++;
+void setRowSparseMatrix(SparseMatrix* sm, int i, int j, int x) {
+    sm->tuple[sm->length].row = i; 
+    sm->tuple[sm->length].col = j;
+    sm->tuple[sm->length].val = x;
+    sm->length++;
+}
+
+void setSparseMatrix(SparseMatrix* sm) {
+    for(int i = 0; i < sm->m; i++) {
+        for(int j = 0; j < sm->n; j++) {
+            int x;
+            printf("matrix[%d][%d]: ", i, j);
+            scanf("%d", &x);
+            if(x != 0) {
+                setRowSparseMatrix(sm, i, j, x);
+            }
         }
     }
+}
 
-    while (apos < alen)
-        insert(result, &reslen, a[apos][0], a[apos][1], a[apos++][2]);
-
-    while (bpos < blen)
-        insert(result, &reslen, b[bpos][0], b[bpos][1], b[bpos++][2]);
-
-    printf("\nDimension: %dx%d", row, col);
-    printf("\nSparse Matrix: \nRow\tColumn\tValue\n");
-    for (int i = 0; i < reslen; i++) {
-        printf("%d\t%d\t%d\n", result[i][0], result[i][1], result[i][2]);
+void addSparseMatrix(SparseMatrix* p, SparseMatrix* q) {
+    if(p->m != q->m || p->n != q->n){
+        printf("incompatible\n");
+        return;
+    }
+    SparseMatrix* r = (SparseMatrix*)malloc(sizeof(SparseMatrix));
+    initSparseMatrix(r, p->m, p->n);
+    for(int i = 0, j = 0; i < p->length; i++) {    
+        while(q->tuple[j].row <= p->tuple[i].row && q->tuple[j].col < p->tuple[i].col &&  j < q->length) {
+            setRowSparseMatrix(r, q->tuple[j].row, q->tuple[j].col, q->tuple[j].val);
+            j++;
+        }
+        if(q->tuple[j].row == p->tuple[i].row && q->tuple[j].col == p->tuple[i].row) {
+            setRowSparseMatrix(r, p->tuple[i].row, p->tuple[i].col, p->tuple[i].val + q->tuple[i].val);
+        }
+        else {
+            setRowSparseMatrix(r, p->tuple[i].row, p->tuple[i].col, p->tuple[i].val);
+        }
+        i++;
     }
 }
 
-void transpose(int data[MAX][3], int *len, int col) {
-    int count[col + 1];
-    int index[col + 1];
-
-    for (int i = 1; i <= col; i++)
-        count[i] = 0;
-
-    for (int i = 0; i < *len; i++)
-        count[data[i][1]]++;
-
-    index[0] = 0;
-
-    for (int i = 1; i <= col; i++)
-        index[i] = index[i - 1] + count[i - 1];
-
-    int result[MAX][3];
-    int reslen = *len;
-
-    for (int i = 0; i < *len; i++) {
-        int rpos = index[data[i][1]]++;
-        result[rpos][0] = data[i][1];
-        result[rpos][1] = data[i][0];
-        result[rpos][2] = data[i][2];
-    }
-
-    *len = reslen;
-
-    printf("\nDimension: %dx%d", col, (*len > 0) ? result[*len - 1][0] + 1 : 0);
-    printf("\nSparse Matrix: \nRow\tColumn\tValue\n");
-    for (int i = 0; i < *len; i++) {
-        printf("%d\t%d\t%d\n", result[i][0], result[i][1], result[i][2]);
-    }
-}
-
-int main() {
-    int a[MAX][3];
-    int b[MAX][3];
-
-    int alen = 0, blen = 0;
-
-    insert(a, &alen, 1, 2, 10);
-    insert(a, &alen, 1, 4, 12);
-    insert(a, &alen, 3, 3, 5);
-    insert(a, &alen, 4, 1, 15);
-    insert(a, &alen, 4, 2, 12);
-
-    insert(b, &blen, 1, 3, 8);
-    insert(b, &blen, 2, 4, 23);
-    insert(b, &blen, 3, 3, 9);
-    insert(b, &blen, 4, 1, 20);
-    insert(b, &blen, 4, 2, 25);
-
-    printf("Addition: ");
-    add(a, alen, b, blen, 4, 4);
-
-    printf("\nTranspose A: ");
-    transpose(a, &alen, 4);
-
-
+int main(){
     return 0;
 }
-
