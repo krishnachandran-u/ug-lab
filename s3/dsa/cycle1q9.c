@@ -1,16 +1,3 @@
-/*
-    author: krishnachandran u
-    github: https://github.com/krishnachandran-u
-    text-editor: NVIM v0.9.1
-    compiler: gcc 11.4.0
-*/
-
-/*
-9. Write a C program to create a structure named Employee with fields EmpId, Name and Salary.
-Store the details of N employees, dynamically allocating memory for the same. Write a
-function to implement Linear Search to search for a particular employee, given the EmpId.
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>

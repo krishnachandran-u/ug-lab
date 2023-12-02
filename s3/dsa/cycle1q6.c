@@ -1,21 +1,3 @@
-/*
-    author: krishnachandran u
-    github: https://github.com/krishnachandran-u
-    text-editor: NVIM v0.9.1
-    compiler: gcc 11.4.0
-*/
-
-/*
-6. Write a menu driven C Program to implement a Double-Ended Queue (DEQUEUE) with the
-following operations:
-a) Insert elements to the Front of the queue.
-b) Insert elements to the Rear of the queue
-
-c) Delete elements from the Front of the queue.
-d) Delete elements from the Rear of the queue.
-e) Display the contents of the queue.
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>

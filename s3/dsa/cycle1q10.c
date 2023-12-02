@@ -1,16 +1,3 @@
-/*
-    author: krishnachandran u
-    github: https://github.com/krishnachandran-u
-    text-editor: NVIM v0.9.1
-    compiler: gcc 11.4.0
-*/
-
-/*
-10. Write a C program to read student names stored in a file. Sort the names in alphabetical order
-using bubble sort. Implement binary search to search for a given name. Implement sort and
-search routines as separate functions.
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>

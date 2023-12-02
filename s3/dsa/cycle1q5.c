@@ -1,18 +1,3 @@
-/*
-    author: krishnachandran u
-    github: https://github.com/krishnachandran-u
-    text-editor: NVIM v0.9.1
-    compiler: gcc 11.4.0
-*/
-
-/*
-5. Write a menu driven C Program to implement a circular queue using arrays with the
-following operations:
-a) Insert an element to the queue.
-b) Delete an element from the queue.
-c) Display the contents of the queue.
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>

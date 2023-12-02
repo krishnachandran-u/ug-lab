@@ -1,8 +1,3 @@
-/*
-8. Write a menu driven C Program, to do the following using stack:
-a) Convert an infix expression to a postfix expression
-b) Evaluate the postfix expression.
-*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

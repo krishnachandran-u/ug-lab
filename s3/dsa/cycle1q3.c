@@ -1,9 +1,3 @@
-/*
-    author: https://codeforces.com/profile/krishnachandran
-    text editor: NVIM v0.9.1
-    compiler: GNU G++20 11.2.0 (64 bit,  winlibs)
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
