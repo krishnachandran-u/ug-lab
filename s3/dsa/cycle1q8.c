@@ -1,82 +1,128 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+#include <math.h>
+#include <limits.h>
 
-#define MAX_EXPR_SIZE 100
+struct Stack {
+    char a[100];
+    int sz;
+};
 
-int precedence(char operator) {
-    switch (operator) {
-    case '+':
-    case '-':
-        return 1;
-    case '*':
-    case '/':
+typedef struct Stack Stack;
+
+void initStack(Stack* stk) {
+    stk->sz = 0;
+}
+
+void push(Stack* stk, char ch) {
+    stk->a[stk->sz] = ch;
+    stk->sz++;
+}
+
+bool isEmpty(Stack* stk) {
+    return (stk->sz == 0);
+}
+
+int top(Stack* stk) {
+    if(isEmpty(stk)) {
+        printf ("--empty--\n");
+        return INT_MAX;
+    }
+    return (stk->a[stk->sz - 1]);
+}
+
+char pop(Stack* stk) {
+    if(isEmpty(stk)) {
+        return '?'; //no action
+    }
+    char ch = top(stk);
+    stk->sz--;
+    return ch;
+}
+
+void action(Stack* opstack, Stack* postfix, char ch) {
+    if(ch >= 'a' && ch <= 'z') {
+        pushToPostfix(postfix, ch); 
+    }
+    if(ch == '(' || isEmpty(postfix) == 0) {
+        pushToOPStack(opstack, ch);
+    }
+    if(ch == ')') {
+        popTill(opstack, postfix, ')');
+        return;
+    }
+    if(getPrecedence(ch) == getPrecedence(top(postfix)) {
+        if(getAssociativity(ch) == 1) {
+            popTill(ch);
+            return;
+        }
+        if(getAssociativity(ch) == 2) {
+            pushToOPStack(ch);
+            return;
+        }
+    }
+    if(getPrecedence(ch) > getPrecedence(top(postfix))) {
+        pushToOPStack(opstack, ch);
+        return;
+    }
+    if(getPrecedence(ch) < getPrecedence(top(postfix))) {
+        popTill(opstack, postfix, ch);
+    }
+}
+
+void pushToPostfix(Stack* postfix, char ch) {
+    push(postfix, ch);
+    return;
+}
+
+void pushToOPstack(Stack* opstack, char ch) {
+    push(opstack, ch);
+    return;
+}
+
+void popTill(Stack* opstack, Stack* postfix, char ch) {
+    while(!isEmpty(opstack) && getPrecedence(ch) <= getPrecedence(top(opstack))) {
+        if(top(opstack) == ')') {
+            
+        }
+        char tmp = pop(opstack);
+        pushToPostfix(postfix, tmp);
+    }
+}
+
+int getPrecedence(char ch) {
+    if(ch == '+' || ch == '-') {
+        return 1; 
+    }
+    if(ch == '*' || ch == '/') {
         return 2;
-    case '^':
+    }
+    if(ch == '^') {
         return 3;
-    default:
-        return -1;
     }
 }
 
-int isOperator(char ch) {
-    return (ch == '+' || ch == '-' || ch == '*' || ch == '/'
-            || ch == '^');
+int getAssociativity(char ch) {
+    if(ch == '+' || ch == '-' || ch == '*' || ch == '/') {
+        return 1;
+    }
+    if(ch == '^') {
+        return 2;
+    }
 }
 
-char* infixToPostfix(char* infix) {
-    int i, j;
-    int len = strlen(infix);
-    char* postfix = (char*)malloc(sizeof(char) * (len + 2));
-    char stack[MAX_EXPR_SIZE];
-    int top = -1;
-
-    for (i = 0, j = 0; i < len; i++) {
-        if (infix[i] == ' ' || infix[i] == '\t')
-            continue;
-
-        if (isalnum(infix[i])) {
-            postfix[j++] = infix[i];
-        }
-       
-        else if (infix[i] == '(') {
-            stack[++top] = infix[i];
-        }
-       
-        else if (infix[i] == ')') {
-            while (top > -1 && stack[top] != '(')
-                postfix[j++] = stack[top--];
-            top--;
-        }
-       
-        else if (isOperator(infix[i])) {
-            while (top > -1
-                   && precedence(stack[top])
-                          >= precedence(infix[i]))
-                postfix[j++] = stack[top--];
-            stack[++top] = infix[i];
-        }
+char* infixToPostfix(char* a){
+    Stack* opstack = (Stack*)malloc(sizeof(Stack));
+    Stack* postfix = (Stack*)malloc(sizeof(Stack));
+    for(int i = 0; a[i] != '\0'; i++){
+        action(opstack, postfix, a[i]);
     }
-
-    while (top > -1) {
-        if (stack[top] == '(') {
-            return "Invalid Expression";
-        }
-        postfix[j++] = stack[top--];
-    }
-    postfix[j] = '\0';
     return postfix;
 }
 
 int main() {
-    char infix[MAX_EXPR_SIZE] = "a+b*(c^d-e)^(f+g*h)-i";
-    char* postfix = infixToPostfix(infix);
-    printf("%s\n", postfix);
-    free(postfix);
-    return 0;
-}
+    char* a = (char*)malloc(100*sizeof(char));
+    scanf("%s", a);
 
-/*
-abcd^e-fgh*+^*+i-k
-*/
+}
