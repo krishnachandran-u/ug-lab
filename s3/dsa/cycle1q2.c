@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <stdbool.h>
 
 struct Tuple {
     int row;
@@ -25,9 +28,9 @@ void initSparseMatrix(SparseMatrix* sm, int m, int n) {
 }
 
 void displaySparseMatrix(SparseMatrix* sm) {
-    printf("row        col        value\n");
+    printf("\nrow        col        value\n");
     for(int i = 0; i < sm->length; i++){
-        printf("%d        %d        %d\n", sm->tuple[i].row, sm->tuple[i].col, sm->tuple[i].value);
+        printf("%d: %d        %d        %d\n", i, sm->tuple[i].row, sm->tuple[i].col, sm->tuple[i].val);
     }
     printf("\n");
 }
@@ -52,28 +55,51 @@ void setSparseMatrix(SparseMatrix* sm) {
     }
 }
 
-void addSparseMatrix(SparseMatrix* p, SparseMatrix* q) {
-    if(p->m != q->m || p->n != q->n){
+SparseMatrix* addSparseMatrix(SparseMatrix* p, SparseMatrix* q) {
+    if(p->m != q->m || p->n != q->n) {
         printf("incompatible\n");
-        return;
+        exit(0);
     }
     SparseMatrix* r = (SparseMatrix*)malloc(sizeof(SparseMatrix));
     initSparseMatrix(r, p->m, p->n);
-    for(int i = 0, j = 0; i < p->length; i++) {    
-        while(q->tuple[j].row <= p->tuple[i].row && q->tuple[j].col < p->tuple[i].col &&  j < q->length) {
+    int i = 0, j = 0;
+    for(; i < p->length;) {    
+        while(j < q->length && ((q->tuple[j].row <= p->tuple[i].row && q->tuple[j].col < p->tuple[i].col) || (q->tuple[j].row < p->tuple[i].row))) {
             setRowSparseMatrix(r, q->tuple[j].row, q->tuple[j].col, q->tuple[j].val);
             j++;
         }
-        if(q->tuple[j].row == p->tuple[i].row && q->tuple[j].col == p->tuple[i].row) {
-            setRowSparseMatrix(r, p->tuple[i].row, p->tuple[i].col, p->tuple[i].val + q->tuple[i].val);
+        printf("%d %d\n", i, j);
+        if(j < q->length && q->tuple[j].row == p->tuple[i].row && q->tuple[j].col == p->tuple[i].col) {
+            setRowSparseMatrix(r, p->tuple[i].row, p->tuple[i].col, p->tuple[i].val + q->tuple[j].val);
+            j++;
         }
         else {
             setRowSparseMatrix(r, p->tuple[i].row, p->tuple[i].col, p->tuple[i].val);
-        }
+        } 
         i++;
     }
+    for(; j < q->length; j++) {
+        setRowSparseMatrix(r, q->tuple[j].row, q->tuple[j].col, q->tuple[j].val);
+    }
+
+    return r;
 }
 
-int main(){
+int main() {
+    SparseMatrix* p = (SparseMatrix*)malloc(sizeof(SparseMatrix));
+    SparseMatrix* q = (SparseMatrix*)malloc(sizeof(SparseMatrix));
+    int m, n;
+    printf("enter the order of p: ");
+    scanf("%d%d", &m, &n);
+    initSparseMatrix(p, m, n);
+    printf("enter the order of q: ");
+    scanf("%d%d", &m, &n);
+    initSparseMatrix(q, m, n);
+    setSparseMatrix(p);
+    setSparseMatrix(q);
+    SparseMatrix* r = addSparseMatrix(p, q);
+    displaySparseMatrix(p);
+    displaySparseMatrix(q);
+    displaySparseMatrix(r);
     return 0;
 }
