@@ -1,0 +1,1416 @@
+\documentclass{article}
+
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+
+\geometry{a4paper, margin=1in}
+
+% Define fancy page style
+\pagestyle{fancy}
+\fancyhf{} % Clear existing headers and footers
+
+% Header definition
+\fancyhead[L]{Experiment \thesection} % Experiment number on the left
+\fancyhead[R]{\today} % Date on the right
+\renewcommand{\headrulewidth}{1pt} % Optional: Add a rule under the header
+
+\title{Lab Cycle 1 Report}
+\author{Krishnachandran U}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents % Table of Contents
+
+% Repeat the following sections for each experiment (2 to 10)
+\clearpage
+\section{Experiment 1: Polynomial Addition}
+\textbf{Aim:} Develop a C program to read and manipulate polynomials using arrays, including the addition of two polynomials.
+\\
+\textbf{Algorithm:}
+\begin{enumerate}
+  \item Start
+  \item Initialize Polynomial structures p and q
+  \item Read the size of p and q
+  \item Initialize p and q using initPolynomial function
+  \item Display a prompt to enter the coefficients of p
+  \item Read coefficients of p using setPolynomial function
+  \item Display a prompt to enter the coefficients of q
+  \item Read coefficients of q using setPolynomial function
+  \item Display the polynomial p using displayPolynomial function
+  \item Display the polynomial q using displayPolynomial function
+  \item Initialize Polynomial structure r using addPolynomial function with p and q as arguments
+  \item Display the resulting polynomial r using displayPolynomial function
+  \item Determine the maximum degree of the polynomials as $max(p->maxp, q->maxp)$
+  \item Initialize a Polynomial structure r with max degree as r->maxp
+  \item Iterate through each term in the polynomials p and q, summing the corresponding coefficients
+  \item Store the result in the corresponding term of the polynomial r
+  \item End
+\end{enumerate}
+
+\textbf{Program:}
+\lstset{language=C, basicstyle=\small\ttfamily, breaklines=true, numbers=left, numberstyle=\tiny\color{gray}, frame=single}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+#define max(a,b) (a > b)? a: b
+
+struct Polynomial {
+    int cf[100];
+    int maxp;
+};
+
+typedef struct Polynomial Polynomial;
+
+void initPolynomial(Polynomial* p) {
+    for(int i = 0; i < p->maxp + 1; i++) {
+        p->cf[i] = 0;
+    }
+}
+
+void setPolynomial(Polynomial* p) {
+    for(int i = 0; i < p->maxp + 1; i++) {
+        printf("coefficient of x^%d: ", i);
+        scanf("%d", &p->cf[i]);
+    }
+}
+
+void displayPolynomial(Polynomial* p) {
+    for(int i = 0; i < p->maxp + 1; i++) {
+        if(p->cf[i] != 0) {
+            printf("%dx^%d  ", p->cf[i], i);
+        }
+    }
+    printf("\n");
+}
+
+Polynomial* addPolynomial(Polynomial* p, Polynomial *q) {
+    Polynomial *r = (Polynomial*)malloc(sizeof(Polynomial));
+    r->maxp = max(p->maxp, q->maxp);
+    for(int i = 0; i < r->maxp + 1; i++){ 
+        r->cf[i] = p->cf[i] + q->cf[i];
+    }
+    return r;
+}
+
+int main() {
+    Polynomial *p = (Polynomial*)malloc(sizeof(Polynomial));
+    Polynomial *q = (Polynomial*)malloc(sizeof(Polynomial));
+    printf("enter size of p and q: ");
+    scanf("%d%d", &p->maxp, &q->maxp);
+    initPolynomial(p);
+    initPolynomial(q);
+    printf("enter p:\n");
+    setPolynomial(p);
+    printf("enter q:\n");
+    setPolynomial(q);
+    displayPolynomial(p);
+    displayPolynomial(q);
+    Polynomial *r = addPolynomial(p, q);
+    displayPolynomial(r);
+    return 0;
+}
+\end{lstlisting}
+\textbf{Sample Input and Output:}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.25\linewidth]{image.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+\\
+\textbf{Result:} Implemented a C program for polynomial manipulation using arrays, including addition and display of polynomials.
+
+% Add more experiments (sections) as needed
+\clearpage
+\section{Experiment 2: Sparse Matrix}
+\textbf{Aim:} Create a C program to perform various operations on sparse matrices, such as conversion to tuple form, displaying in tuple form, finding the transpose, and calculating the sum of two matrices in tuple form.
+
+\textbf{Algorithm:}
+\begin{enumerate}
+  \item Start
+  \item Initialize SparseMatrix structures p and q
+  \item Read the order of p and q
+  \item Initialize p and q using initSparseMatrix function
+  \item Display a prompt to set the sparse matrix p using setSparseMatrix function
+  \item Display a prompt to set the sparse matrix q using setSparseMatrix function
+  \item Initialize SparseMatrix structure r using addSparseMatrix function with p and q as arguments
+  \item Display the sparse matrix p using displaySparseMatrix function
+  \item Display the sparse matrix q using displaySparseMatrix function
+  \item Display the resulting sparse matrix r using displaySparseMatrix function
+  \item Ensure the compatibility of matrices p and q (i.e., check if their dimensions match)
+  \item Initialize a SparseMatrix structure r with dimensions m and n
+  \item Initialize counters i and j to 0
+  \item Iterate through each term in the sparse matrices p and q
+  \item Check the order of terms and perform addition accordingly
+  \item If q's term precedes p's term, copy q's term to r and increment j
+  \item If p's term precedes q's term, copy p's term to r
+  \item If terms have the same order, add their values and store in r
+  \item Increment i
+  \item Repeat until all terms in p and q are processed
+  \item Copy any remaining terms from q to r
+  \item Display the resulting sparse matrix r
+  \item End
+\end{enumerate}
+
+
+\textbf{Program:}
+\lstset{language=C, basicstyle=\small\ttfamily, breaklines=true, numbers=left, numberstyle=\tiny\color{gray}, frame=single}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <stdbool.h>
+
+struct Tuple {
+    int row;
+    int col;
+    int val;
+};
+
+typedef struct Tuple Tuple;
+
+struct SparseMatrix { 
+    Tuple tuple[100];
+    int m;
+    int n;
+    int length;
+};
+
+typedef struct SparseMatrix SparseMatrix;
+
+void initSparseMatrix(SparseMatrix* sm, int m, int n) {
+    sm->m = m; 
+    sm->n = n;
+    sm->length = 0;
+    return;
+}
+
+void displaySparseMatrix(SparseMatrix* sm) {
+    printf("\nrow        col        value\n");
+    for(int i = 0; i < sm->length; i++){
+        printf("%d: %d        %d        %d\n", i, sm->tuple[i].row, sm->tuple[i].col, sm->tuple[i].val);
+    }
+    printf("\n");
+}
+
+void setRowSparseMatrix(SparseMatrix* sm, int i, int j, int x) {
+    sm->tuple[sm->length].row = i; 
+    sm->tuple[sm->length].col = j;
+    sm->tuple[sm->length].val = x;
+    sm->length++;
+}
+
+void setSparseMatrix(SparseMatrix* sm) {
+    for(int i = 0; i < sm->m; i++) {
+        for(int j = 0; j < sm->n; j++) {
+            int x;
+            printf("matrix[%d][%d]: ", i, j);
+            scanf("%d", &x);
+            if(x != 0) {
+                setRowSparseMatrix(sm, i, j, x);
+            }
+        }
+    }
+}
+
+SparseMatrix* addSparseMatrix(SparseMatrix* p, SparseMatrix* q) {
+    if(p->m != q->m || p->n != q->n) {
+        printf("incompatible\n");
+        exit(0);
+    }
+    SparseMatrix* r = (SparseMatrix*)malloc(sizeof(SparseMatrix));
+    initSparseMatrix(r, p->m, p->n);
+    int i = 0, j = 0;
+    for(; i < p->length;) {    
+        while(j < q->length && ((q->tuple[j].row <= p->tuple[i].row && q->tuple[j].col < p->tuple[i].col) || (q->tuple[j].row < p->tuple[i].row))) {
+            setRowSparseMatrix(r, q->tuple[j].row, q->tuple[j].col, q->tuple[j].val);
+            j++;
+        }
+        if(j < q->length && q->tuple[j].row == p->tuple[i].row && q->tuple[j].col == p->tuple[i].col) {
+            setRowSparseMatrix(r, p->tuple[i].row, p->tuple[i].col, p->tuple[i].val + q->tuple[j].val);
+            j++;
+        }
+        else {
+            setRowSparseMatrix(r, p->tuple[i].row, p->tuple[i].col, p->tuple[i].val);
+        } 
+        i++;
+    }
+    for(; j < q->length; j++) {
+        setRowSparseMatrix(r, q->tuple[j].row, q->tuple[j].col, q->tuple[j].val);
+    }
+
+    return r;
+}
+
+int main() {
+    SparseMatrix* p = (SparseMatrix*)malloc(sizeof(SparseMatrix));
+    SparseMatrix* q = (SparseMatrix*)malloc(sizeof(SparseMatrix));
+    int m, n;
+    printf("enter the order of p: ");
+    scanf("%d%d", &m, &n);
+    initSparseMatrix(p, m, n);
+    printf("enter the order of q: ");
+    scanf("%d%d", &m, &n);
+    initSparseMatrix(q, m, n);
+    setSparseMatrix(p);
+    setSparseMatrix(q);
+    SparseMatrix* r = addSparseMatrix(p, q);
+    displaySparseMatrix(p);
+    displaySparseMatrix(q);
+    displaySparseMatrix(r);
+    return 0;
+}
+\end{lstlisting}
+
+\textbf{Sample Input and Output:}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.25\linewidth]{7851.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+
+\textbf{Result:} Developed a C program for sparse matrix operations, including conversion to tuple form, displaying in tuple form, finding the transpose, and calculating the sum of two matrices in tuple form.
+
+\clearpage
+\section{Experiment 3: Stack}
+\textbf{Aim:}  Implement a menu-driven C program to simulate a stack using arrays, allowing operations like pushing elements, popping elements, and displaying the contents.
+
+\textbf{Algorithm:}
+\begin{enumerate}
+  \item Start
+  \item Initialize a stack structure S with members: an array 'a' for elements, 'top' for the top index, and 'cp' for the current capacity
+  \item Set the array 'a' to NULL, 'top' to -1, and 'cp' to 0 using the init function
+  \item Define a function push to insert an element into the stack:
+    \begin{enumerate}
+      \item Increment 'top'
+      \item If 'top' exceeds the current capacity, double the capacity using max function and reallocate the array
+      \item Copy existing elements to the new array
+      \item Free the old array
+      \item Set the new array as 'a'
+      \item Store the new element at the top index
+      \item Print a success message
+    \end{enumerate}
+  \item Define a function pop to remove an element from the stack:
+    \begin{enumerate}
+      \item If 'top' is -1, print an underflow message and return
+      \item Print the element being popped
+      \item Decrement 'top'
+      \item If the stack size is less than or equal to half the capacity, halve the capacity using min function and reallocate the array
+    \end{enumerate}
+  \item Define a function disp to display the elements of the stack
+  \item In the main function:
+    \begin{enumerate}
+      \item Initialize a stack 's' using the init function
+      \item Perform a sequence of push and pop operations
+      \item Display the stack after each operation
+    \end{enumerate}
+  \item End
+\end{enumerate}
+
+
+
+\textbf{Program:}
+\lstset{language=C, basicstyle=\small\ttfamily, breaklines=true, numbers=left, numberstyle=\tiny\color{gray}, frame=single}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <limits.h>
+
+#define max(a, b) (a > b)? a: b;
+#define min(a, b) (a < b)? a: b;
+
+struct S{
+    int *a;
+    int top, cp;
+};
+
+void init(struct S* s){
+    s->a = NULL; 
+    s->top = -1;
+    s->cp = 0;
+}
+
+void push(struct S* s, int x){
+    s->top++;
+    if(s->top + 1 > s->cp){
+        s->cp = max(1, s->cp << 1);
+        int *p = (int*)malloc(sizeof(int)*s->cp);
+        for(int i = 0; i < s->top; i++){
+            p[i] = s->a[i];
+        }
+        free(s->a);
+        s->a = p;
+    }
+    s->a[s->top] = x; 
+    printf("[successful] pushed %d\n", x);
+    return;
+}
+
+void pop(struct S* s){
+    if(s->top == -1){
+        printf("[underflow] can't pop\n");
+        return;
+    }
+    printf("[successful] popped %d\n", s->a[s->top]); 
+    s->top--;
+    if(s->top + 1 <= (s->cp >> 1)){
+        s->cp >>= 1;
+        s->a = (int*) realloc(s->a, sizeof(int)*s->cp);
+    }
+}
+
+void disp(struct S* s){
+    for(int i = 0; i <= s->top; i++){
+        printf("%d  ", s->a[i]);
+    }
+    printf("\n");
+    return;
+}
+
+int main(){
+    struct S s; 
+    init(&s);
+    printf("1.push\n2.pop\n3.disp\n4.exit\n");
+
+    while(true) {
+        int ch;
+        scanf("%d", &ch);
+        int x;
+        switch(ch) {
+            case 1: scanf("%d", &x); push(&s, x); break;
+            case 2: pop(&s); break;
+            case 3: disp(&s); break;
+            case 4: exit(0); break;
+        }
+    }
+}
+\end{lstlisting}
+
+\textbf{Sample Input and Output:}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.25\linewidth]{imfgage.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+\\
+\textbf{Result:} Executed a menu-driven C program simulating a stack with push, pop, and display operations.
+
+\clearpage
+\section{Experiment 4: Queue}
+\textbf{Aim:} Develop a menu-driven C program to simulate a queue using arrays, featuring operations like inserting elements, deleting elements, and displaying the contents.
+
+\textbf{Algorithm:}
+\begin{enumerate}
+  \item Start
+  \item Initialize a queue structure Q with members: an array 'a' for elements, 'f' for front index, 'r' for rear index, and 'cp' for the current capacity
+  \item Set the array 'a' to NULL, 'f' to 0, 'r' to -1, and 'cp' to 0 using the initQ function
+  \item Define a function pushQ to insert an element into the queue:
+    \begin{enumerate}
+      \item Increment 'r'
+      \item If the number of elements in the queue exceeds the current capacity, double the capacity using max function and reallocate the array
+      \item Copy existing elements to the new array
+      \item Free the old array
+      \item Set the new array as 'a'
+      \item Store the new element at the rear index
+      \item Print a success message
+    \end{enumerate}
+  \item Define a function popQ to remove an element from the queue:
+    \begin{enumerate}
+      \item If the queue is empty, print an underflow message and return
+      \item Print the element being popped
+      \item Increment 'f'
+      \item If the number of elements in the queue is less than or equal to half the capacity, halve the capacity using min function and reallocate the array
+    \end{enumerate}
+  \item Define a function dispQ to display the elements of the queue
+  \item In the main function:
+    \begin{enumerate}
+      \item Initialize a queue 'q' using the initQ function
+      \item Perform a sequence of pushQ and popQ operations
+      \item Display the queue after each operation
+    \end{enumerate}
+  \item End
+\end{enumerate}
+
+\textbf{Program:}
+\lstset{language=C, basicstyle=\small\ttfamily, breaklines=true, numbers=left, numberstyle=\tiny\color{gray}, frame=single}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+#include <stdbool.h>
+#include <math.h>
+
+#define max(a, b) (a > b)? a: b;
+#define min(a, b) (a < b)? a: b;
+
+struct Q{
+    int *a; // array
+    int cp; // size && capacity
+    int f, r; //front and rear
+};
+
+void initQ(struct Q* q){
+    q->a = NULL;
+    q->f = 0; q->r = -1;
+    q->cp = 0;
+}
+
+void pushQ(struct Q* q, int x){
+    q->r++;
+    if(q->r - q->f + 1 > q->cp){
+        q->cp = max(1, q->cp << 1); 
+        int *p = (int*)malloc(sizeof(int)*q->cp);
+        int cnt = 0;
+        for(int i = q->f; i < q->r; i++){
+            p[cnt++] = q->a[i];
+        }
+        free(q->a);
+        q->a = p;
+        q->f = 0; q->r = cnt;
+    }
+    q->a[q->r] = x; 
+    printf("[successful] pushed %d\n", x);
+    return;
+}
+
+void popQ(struct Q* q){
+    if(q->r - q->f + 1 == 0){
+        printf("[underflow] can't pop\n");
+        return;
+    }
+    printf("[successful] popped %d\n", q->a[q->f]); 
+    q->f++;
+    if(q->r - q->f + 1 <= (q->cp >> 1)){
+        q->cp >>= 1;
+        int *p = (int*) malloc(sizeof(int)*q->cp);
+        int cnt = 0;
+        for(int i = q->f; i <= q->r; i++){
+            p[cnt++] = q->a[i];
+        }
+        free(q->a);
+        q->a = p;
+        q->f = 0; q->r = cnt - 1;  
+    }
+    return;
+}
+
+void disp(struct Q* q){
+    for(int i = q->f; i <= q->r; i++){
+        printf("%d  ", q->a[i]);
+    }
+    printf("\n");
+    return;
+}
+
+int main(){
+    struct Q q;
+    initQ(&q);
+
+    printf("1.push\n2.pop\n3.disp\n4.exit\n");
+
+    while(true) {
+        int ch;
+        scanf("%d", &ch);
+        int x;
+        switch(ch) {
+            case 1: scanf("%d", &x); pushQ(&q, x); break;
+            case 2: popQ(&q); break;
+            case 3: disp(&q); break;
+            case 4: exit(0); break;
+        }
+    }
+}
+\end{lstlisting}
+
+\textbf{Sample Input and Output:}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.25\linewidth]{imagadfe.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+\\
+\textbf{Result:} Executed a menu-driven C program simulating a queue with insert, delete, and display operations.
+
+\clearpage
+\section{Experiment 5: Circular Queue}
+\textbf{Aim:} Write a C program with a menu-driven interface to implement a circular queue using arrays, providing operations for inserting elements, deleting elements, and displaying the contents.
+\textbf{Algorithm:}
+\begin{enumerate}
+  \item Start
+  \item Initialize a circular queue structure CQ with members: an array 'a' for elements, 'f' for front index, 'r' for rear index, 'sz' for the current size, and 'cp' for the current capacity
+  \item Set 'cp' to the desired capacity 'n'
+  \item Allocate memory for array 'a' with size 'cp' using malloc
+  \item Set 'r' to 0, 'f' to 0, and 'sz' to 0
+  \item Define a function push to insert an element into the circular queue:
+    \begin{enumerate}
+      \item If the size of the queue equals the capacity, print an overflow message and return
+      \item Store the new element at the rear index
+      \item Increment 'r' using modulo 'cp'
+      \item Increment 'sz'
+    \end{enumerate}
+  \item Define a function pop to remove an element from the circular queue:
+    \begin{enumerate}
+      \item If the size of the queue is 0, print an underflow message and return
+      \item Increment 'f' using modulo 'cp'
+      \item Decrement 'sz'
+    \end{enumerate}
+  \item Define a function disp to display the elements of the circular queue
+  \item In the main function:
+    \begin{enumerate}
+      \item Initialize a circular queue 'cq' using the init function with the desired capacity 'n'
+      \item Enter a loop to perform push, pop, display, and exit operations based on user input
+    \end{enumerate}
+  \item End
+\end{enumerate}
+
+\textbf{Program:}
+\lstset{language=C, basicstyle=\small\ttfamily, breaklines=true, numbers=left, numberstyle=\tiny\color{gray}, frame=single}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <stdbool.h>
+#include <limits.h>
+
+struct CQ{
+    int *a; 
+    int f, r, sz, cp;
+};
+
+void init(struct CQ* cq, int n){
+    cq->cp = n;
+    cq->a = (int*)malloc(sizeof(int)*cq->cp); 
+    cq->r = 0;
+    cq->f = 0;
+    cq->sz = 0;
+}
+
+void push(struct CQ* cq, int x){
+    if(cq->sz == cq->cp){
+        printf("overflow\n");
+        return;
+    }
+    cq->a[cq->r] = x;
+    cq->r = (cq->r + 1) % cq->cp;
+    cq->sz++;
+    return;
+}
+
+void pop(struct CQ* cq){
+    if(cq->sz == 0){
+        printf("underlow\n");
+        return;
+    }
+    cq->f = (cq->f + 1) % cq->cp;
+    cq->sz--;
+    return;
+}
+
+void disp(struct CQ* cq){
+    int k = cq->sz;
+    for(int i = cq->f; k--; i = (i + 1) % cq->cp){
+        printf("%d  ", cq->a[i]);
+    }
+    printf("\n");
+}
+
+int main(){
+    struct CQ cq;
+    int n;
+    printf("n: "); scanf("%d", &n); 
+    init(&cq, n);
+
+    printf("1.push\n2.pop\n3.disp\n4.exit\n");
+
+    while(true){
+        int ch;
+        scanf("%d", &ch);
+        switch(ch){
+            case 1: int x; printf("x: "); scanf("%d", &x); push(&cq, x);
+                    break;
+            case 2: pop(&cq);
+                    break;
+            case 3: disp(&cq);
+                    break;
+            case 4: exit(0);
+        }
+    }
+    return 0;
+}
+\end{lstlisting}
+
+\textbf{Sample Input and Output:}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.25\linewidth]{im748age.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+
+\textbf{Result:} Implemented a menu-driven C program for a circular queue with insert, delete, and display operations.
+
+\clearpage
+\section{Experiment 6: Double Ended Queue}
+\textbf{Aim:} Create a menu-driven C program to implement a Double-Ended Queue (DEQUEUE) using arrays, offering operations for inserting elements at the front and rear, deleting elements from the front and rear, and displaying the contents
+
+\textbf{Algorithm:}
+\begin{enumerate}
+  \item Start
+  \item Initialize a deque structure Q with members: an array 'a' for elements, 'f' for front index, 'r' for rear index, and 'cp' for the current capacity
+  \item Define a swap function to interchange the values of two variables
+  \item Define an initialization function init to set the deque to an initial state:
+    \begin{enumerate}
+      \item Set 'a' to NULL, 'f' to 0, 'r' to -1, and 'cp' to 0
+    \end{enumerate}
+  \item Define a push\_back function to insert an element at the back of the deque:
+    \begin{enumerate}
+      \item Increment 'r'
+      \item If the size of the deque exceeds the capacity, double the capacity (cp << 1) and reallocate memory for 'a'
+      \item Copy elements from 'f' to 'r' to a new array 'p'
+      \item Free the old array 'a'
+      \item Update 'a' to 'p', 'f' to 0, 'r' to the count of elements, and set the new element at 'r'
+    \end{enumerate}
+  \item Define a push\_front function to insert an element at the front of the deque:
+    \begin{enumerate}
+      \item Call push\_back to increase the size of the deque
+      \item Shift elements from 'r' to 'f' one position to the right
+    \end{enumerate}
+  \item Define a pop\_front function to remove an element from the front of the deque:
+    \begin{enumerate}
+      \item If the size of the deque is 0, print an underflow message and return
+      \item Increment 'f'
+      \item If the size of the deque is less than or equal to half the capacity, halve the capacity (cp >> 1) and reallocate memory for 'a'
+      \item Copy elements from 'f' to 'r' to a new array 'p'
+      \item Free the old array 'a'
+      \item Update 'a' to 'p', 'f' to 0, 'r' to the count of elements minus 1
+    \end{enumerate}
+  \item Define a pop\_back function to remove an element from the back of the deque:
+    \begin{enumerate}
+      \item Shift elements from 'r' to 'f' one position to the left
+      \item Call pop\_front to remove the last element
+    \end{enumerate}
+  \item Define a disp function to display the elements of the deque
+  \item In the main function:
+    \begin{enumerate}
+      \item Initialize a deque 'q' using the init function
+      \item Enter a loop to perform push\_front, push\_back, pop\_back, pop\_front, display, and exit operations based on user input
+    \end{enumerate}
+  \item End
+\end{enumerate}
+
+\textbf{Program:}
+\lstset{language=C, basicstyle=\small\ttfamily, breaklines=true, numbers=left, numberstyle=\tiny\color{gray}, frame=single}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+#include <stdbool.h>
+#include <math.h>
+
+#define max(a, b) (a > b)? a: b;
+#define min(a, b) (a < b)? a: b;
+
+struct Q{
+    int *a; // array
+    int cp; // size && capacity
+    int f, r; //front and rear
+};
+
+void swap(int *x, int *y){
+    int temp = *x;
+    *x = *y;
+    *y = temp;
+}
+
+void init(struct Q* q){
+    q->a = NULL;
+    q->f = 0; q->r = -1;
+    q->cp = 0;
+}
+
+void push_back(struct Q* q, int x){
+    q->r++;
+    if(q->r - q->f + 1 > q->cp){
+        q->cp = max(1, q->cp << 1); 
+        int *p = (int*)malloc(sizeof(int)*q->cp);
+        int cnt = 0;
+        for(int i = q->f; i < q->r; i++){
+            p[cnt++] = q->a[i];
+        }
+        free(q->a);
+        q->a = p;
+        q->f = 0; q->r = cnt;
+    }
+    q->a[q->r] = x; 
+    printf("[successful] pushed\n");
+    return;
+}
+
+void push_front(struct Q* q, int x){  
+    push_back(q, x);
+    for(int i = q->r; i > q->f; i--){
+        swap(&q->a[i], &q->a[i - 1]);
+    }
+    return;
+}
+
+void pop_front(struct Q* q){
+    if(q->r - q->f + 1 == 0){
+        printf("[underflow] can't pop\n");
+        return;
+    }
+    printf("[successful] popped\n"); 
+    q->f++;
+    if(q->r - q->f + 1 <= (q->cp >> 1)){
+        q->cp >>= 1;
+        int *p = (int*) malloc(sizeof(int)*q->cp);
+        int cnt = 0;
+        for(int i = q->f; i <= q->r; i++){
+            p[cnt++] = q->a[i];
+        }
+        free(q->a);
+        q->a = p;
+        q->f = 0; q->r = cnt - 1;  
+    }
+    return;
+}
+
+void pop_back(struct Q* q){
+    for(int i = q->r; i > q->f; i--){
+        swap(&q->a[i], &q->a[i - 1]);
+    }
+    pop_front(q);
+    return;
+}
+
+void disp(struct Q* q){
+    for(int i = q->f; i <= q->r; i++){
+        printf("%d  ", q->a[i]);
+    }
+    printf("\n");
+    return;
+}
+
+int main(){
+    struct Q q;
+    init(&q);
+    printf("1.push_front(x)\n2.push_back(x)\n3.pop_back\n4.pop_front\n5.display\n6.exit\n");
+    while(true){
+        int ch;
+        int x;
+        scanf("%d", &ch);
+        switch(ch){
+            case 1 : printf("x: "); scanf("%d", &x); push_front(&q, x); break;
+            case 2 : printf("x: "); scanf("%d", &x); push_back(&q, x); break;
+            case 3 : pop_back(&q); break;
+            case 4 : pop_front(&q); break;
+            case 5 : disp(&q); break;
+            case 6 : return 0;
+
+        }
+    }
+    return 0;
+}
+\end{lstlisting}
+
+\textbf{Sample Input and Output:}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.25\linewidth]{im444age.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+\\
+\textbf{Result:} Developed a menu-driven C program for a Double-Ended Queue (DEQUEUE) with insert and delete operations from the front and rear, and display functionality.
+
+\clearpage
+\section{Experiment 7: Priority Queue}
+\textbf{Aim:} Design a C program with a menu-driven approach to implement a Priority Queue using arrays, featuring operations for inserting elements, deleting elements, and displaying the contents.
+
+\textbf{Algorithm:}
+\begin{enumerate}
+  \item Start
+  \item Initialize a priority queue structure PriorityQueue with an array 'a' for elements and 'sz' for the current size
+  \item Define an initPQ function to set the priority queue to an initial state:
+    \begin{enumerate}
+      \item Set 'sz' to -1
+    \end{enumerate}
+  \item Define an isEmpty function to check if the priority queue is empty:
+    \begin{enumerate}
+      \item Return true if 'sz' is -1, else return false
+    \end{enumerate}
+  \item Define an isFull function to check if the priority queue is full:
+    \begin{enumerate}
+      \item Return true if 'sz' is equal to MAX - 1, else return false
+    \end{enumerate}
+  \item Define an enPQ function to enqueue an element into the priority queue based on its priority:
+    \begin{enumerate}
+      \item If the priority queue is full, print an overflow message and return
+      \item Initialize 'l' to -1 and 'r' to 'sz' + 1
+      \item Perform a binary search to find the correct position 'r' for the new element based on its priority
+      \item Shift elements to the right to make space for the new element
+      \item Insert the new element at position 'r'
+      \item Increment 'sz'
+    \end{enumerate}
+  \item Define a dPQ function to dequeue an element from the priority queue:
+    \begin{enumerate}
+      \item If the priority queue is empty, print an underflow message and return
+      \item Print a successful dequeue message with the dequeued element
+      \item Decrement 'sz'
+    \end{enumerate}
+  \item Define a display function to print the elements of the priority queue:
+    \begin{enumerate}
+      \item If the priority queue is empty, print an empty message and return
+      \item Print a successful message
+      \item Iterate through the elements and print each one
+    \end{enumerate}
+  \item In the main function:
+    \begin{enumerate}
+      \item Initialize a priority queue mypq using the initPQ function
+      \item Display the contents of mypq
+      \item Enqueue elements 30, 25, 40, and 10 into mypq using the enPQ function
+      \item Display the contents of mypq after each enqueue operation
+      \item Dequeue elements from mypq using the dPQ function and display the contents after each dequeue operation
+    \end{enumerate}
+  \item End
+\end{enumerate}
+
+
+
+\textbf{Program:}
+\lstset{language=C, basicstyle=\small\ttfamily, breaklines=true, numbers=left, numberstyle=\tiny\color{gray}, frame=single}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <limits.h>
+
+#define MAX 100
+
+struct PriorityQueue{
+    int a[100];
+    int sz;
+};
+
+void initPQ(struct PriorityQueue* pq){
+    pq->sz = -1; 
+}
+
+bool isEmpty(struct PriorityQueue* pq){
+    return pq->sz == -1;
+}
+
+bool isFull(struct PriorityQueue* pq){
+    return pq->sz == MAX - 1;
+}
+
+void enPQ(struct PriorityQueue* pq, int value){
+    if(isFull(pq)){
+        printf("[UNSUCCESSFUL] Queue overflow. cannot enqueue\n");
+        return;
+    }
+    int l = -1, r = pq->sz + 1;
+    while(r - l > 1){
+        int m = l + (r - l)/2;
+        if(pq->a[m] <= value) l = m;
+        else r = m;
+    }
+    for(int i = pq->sz; i >= r; i--){
+        pq->a[i + 1] = pq->a[i];
+    }
+    pq->a[r] = value;
+    pq->sz++;
+    return;
+}
+
+void dPQ(struct PriorityQueue* pq){
+    if(isEmpty(pq)){
+        printf("[UNSUCCESSFUL] Queue underflow. cannot dequeue\n");
+        return;
+    }
+    printf("[SUCCESSFUL] Dequeued: %d\n", pq->a[pq->sz]);
+    pq->sz--;
+}
+
+void display(struct PriorityQueue* pq){
+    if(isEmpty(pq)){
+        printf("[SUCCESSFUL] Queue empty\n");
+        return;
+    }
+    printf("[SUCCESSFUL]\n");
+    for(int i = 0; i <= pq->sz; i++){
+        printf("%d ", pq->a[i]);
+    }
+    printf("\n");
+    return;
+}
+
+int main(){
+    struct PriorityQueue mypq;
+    initPQ(&mypq);
+    printf("1.push\n2.pop\n3.disp\n4.exit\n");
+
+    while(true) {
+        int ch;
+        scanf("%d", &ch);
+        int x;
+        switch(ch) {
+            case 1: scanf("%d", &x); enPQ(&mypq, x); break;
+            case 2: dPQ(&mypq); break;
+            case 3: display(&mypq); break;
+            case 4: exit(0); break;
+        }
+    } 
+}
+\end{lstlisting}
+
+\textbf{Sample Input and Output:}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.25\linewidth]{imfWage.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+\\
+\textbf{Result:} Executed a menu-driven C program implementing a Priority Queue with insert, delete, and display operations.
+
+\clearpage
+\section{Experiment 8: Infix to Postfix}
+\textbf{Aim:} Develop a menu-driven C program using stacks to convert an infix expression to a postfix expression and evaluate the postfix expression.
+\\
+\textbf{Algorithm:}
+\begin{enumerate}
+  \item Start
+  \item Define a structure named 'stack' with integer members 'top', 'size', and an array 'arr' of size 100
+  \item Define a function 'createStack' that allocates memory for the stack, initializes 'top' to -1, 'size' to 100, and returns the stack
+  \item Define a function 'push' that takes a stack 's' and an integer 'data' and pushes 'data' onto the stack
+  \item Define a function 'pop' that takes a stack 's' and pops the top element from the stack
+  \item Define a function 'getPriority' that takes a character 'op' and returns its priority based on the given rules
+  \item Define a function 'infixToPostfix' that takes an infix expression 'infix' and a stack 's':
+    \begin{enumerate}
+      \item Initialize 'j' to 0
+      \item Iterate over the characters in 'infix' until '\textbackslash 0':
+        \begin{enumerate}
+          \item If the character is a lowercase letter, print it
+          \item If the character is '(', push it onto the stack
+          \item If the character is ')':
+            \begin{enumerate}
+              \item While the stack is not empty and the top of the stack is not '(', pop and print elements
+              \item If the stack is not empty, pop '('
+            \end{enumerate}
+          \item If the character is an operator:
+            \begin{enumerate}
+              \item While the stack is not empty and the priority of the character is less than or equal to the priority of the top of the stack, pop and print elements
+              \item Push the character onto the stack
+            \end{enumerate}
+        \end{enumerate}
+    \end{enumerate}
+  \item Define a function 'postfixEvaluate' that takes a postfix expression 'postfix' and a stack 's':
+    \begin{enumerate}
+      \item Initialize 'j' to 0
+      \item Iterate over the characters in 'postfix' until '\textbackslash 0':
+        \begin{enumerate}
+          \item If the character is a digit, extract the whole number, convert it to an integer, and push it onto the stack
+          \item If the character is an operator:
+            \begin{enumerate}
+              \item Pop two elements from the stack, perform the operation, and push the result back onto the stack
+            \end{enumerate}
+        \end{enumerate}
+      \item Print the final result
+    \end{enumerate}
+  \item In the 'main' function:
+    \begin{enumerate}
+      \item Prompt the user to enter an expression and store it in 'exp'
+      \item Create a stack using 'createStack'
+      \item Prompt the user to choose between infix to postfix and postfix evaluation
+      \item If the choice is 1, call 'infixToPostfix' with 'exp' and the stack
+      \item If the choice is 2, call 'postfixEvaluate' with 'exp' and the stack
+      \item If the choice is neither 1 nor 2, print an error message
+    \end{enumerate}
+  \item End
+\end{enumerate}
+
+
+
+\textbf{Program:}
+\lstset{language=C, basicstyle=\small\ttfamily, breaklines=true, numbers=left, numberstyle=\tiny\color{gray}, frame=single}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct stack {
+    int top;
+    int size;
+    int arr[100];
+} stack;
+
+stack* createStack();
+void push(stack* s, int data);
+void pop(stack* s);
+void infixToPostfix(char* infix, stack* s);
+void postfixEvaluate(char* postfix, stack* s);
+int getPriority(char op);
+
+int main() {
+    printf("\nEnter the expression: ");
+    char exp[100];
+    fgets(exp, 100, stdin);
+    stack* s = createStack();
+    printf("1) Infix to postfix\n2) evaluate Postfix\nChoice: ");
+    int ch;
+    scanf("%d", &ch);
+    if (ch == 1) {
+        infixToPostfix(exp, s);
+    } else if (ch == 2) {
+        postfixEvaluate(exp, s);
+    } else {
+        printf("Invalid choice\n");
+    }
+}
+
+void infixToPostfix(char* infix, stack* s) {
+    int j = 0;
+    for (j = 0; infix[j] != '\0'; j++)
+        ;
+    infix[j] = ')';
+    for (int i = 0; i <= j; i++) {
+        if (infix[i] >= 'a' && infix[i] <= 'z') {
+            printf("%c", infix[i]);
+        } else if (infix[i] == '(') {
+            push(s, infix[i]);
+        } else if (infix[i] == ')') {
+            while (s->top >= 0 && s->arr[s->top] != '(') {
+                printf("%c", s->arr[s->top]);
+                pop(s);
+            }
+            if (s->top >= 0)
+                pop(s);
+        } else {
+            while (s->top >= 0 && getPriority(infix[i]) <= getPriority(s->arr[s->top])) {
+                printf("%c", s->arr[s->top]);
+                pop(s);
+            }
+            push(s, infix[i]);
+        }
+    }
+}
+
+void postfixEvaluate(char* postfix, stack* s) {
+    int j = 0;
+    for (j = 0; postfix[j] != '\0'; j++)
+        ;
+    for (int i = 0; i < j; i++) {
+        printf("%c", postfix[i]);
+    }
+    for (int i = 0; i < j; i++) {
+        int c = postfix[i] - '0';
+        if (postfix[i] == ' ')
+            continue;
+        if (c >= 0 && c <= 9) {
+            int val = 0;
+            while (i < j && postfix[i] >= '0' && postfix[i] <= '9') {
+                val = val * 10 + (postfix[i] - '0');
+                i++;
+            }
+            i--;
+            push(s, val);
+        } else {
+            int a = s->arr[s->top];
+            pop(s);
+            int b = s->arr[s->top];
+            pop(s);
+            if (postfix[i] == '+') {
+                push(s, a + b);
+            } else if (postfix[i] == '-') {
+                push(s, b - a);
+            } else if (postfix[i] == '*') {
+                push(s, a * b);
+            } else if (postfix[i] == '/') {
+                push(s, b / a);
+            } else {
+                printf("Invalid character\n");
+                return;
+            }
+        }
+    }
+    printf("\nExpression = %d\n", s->arr[s->top]);
+}
+
+int getPriority(char op) {
+    switch (op) {
+        case '(':
+            return 0;
+            break;
+        case '+':
+            return 1;
+            break;
+        case '-':
+            return 1;
+            break;
+        case '*':
+            return 2;
+            break;
+        case '/':
+            return 2;
+            break;
+        case '^':
+            return 3;
+        default:
+            return -1;
+    }
+}
+
+stack* createStack() {
+    stack* s = (stack*)malloc(sizeof(stack));
+    s->top = -1;
+    s->size = 100;
+    return s;
+}
+
+void push(stack* s, int data) {
+    if (s->top == s->size - 1) {
+        printf("Stack Overflow\n");
+        return;
+    }
+    s->top++;
+    s->arr[s->top] = data;
+}
+
+void pop(stack* s) {
+    if (s->top < 0) {
+        printf("Stack Underflow\n");
+        return;
+    }
+    s->top--;
+}
+\end{lstlisting}
+
+\textbf{Sample Input and Output:}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.25\linewidth]{imag312e.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.25\linewidth]{imag252e.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+\\
+\textbf{Result:} Implemented a menu-driven C program using stacks to convert infix expressions to postfix and evaluate postfix expressions.
+
+\clearpage
+\section{Experiment 9: Linear Search}
+\textbf{Aim:} Write a C program to create and manage employee records using a dynamically allocated structure, and implement linear search to find an employee by EmpId.
+
+\textbf{Algorithm:}
+\begin{enumerate}
+  \item Start
+  \item Declare a structure named 'employee' with fields: empid (integer), name (character array), salary (integer)
+  \item In the main function:
+    \begin{enumerate}
+      \item Declare an integer 'n' and prompt the user to enter its value
+      \item Declare a pointer to an array of 'employee' structures named 'emp' and allocate memory for 'n' employees
+      \item Iterate from 0 to 'n-1':
+        \begin{enumerate}
+          \item Prompt the user to enter empid, name, and salary for each employee and store the values in the corresponding structure fields
+        \end{enumerate}
+      \item Declare an integer 'x' and prompt the user to enter a value for 'x'
+      \item Iterate from 0 to 'n-1':
+        \begin{enumerate}
+          \item If the empid of the current employee is equal to 'x', print "found at" followed by the current index 'i' and return 0
+        \end{enumerate}
+      \item Print "not found"
+    \end{enumerate}
+  \item End
+\end{enumerate}
+
+\textbf{Program:}
+\lstset{language=C, basicstyle=\small\ttfamily, breaklines=true, numbers=left, numberstyle=\tiny\color{gray}, frame=single}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <limits.h>
+#include <math.h>
+#include <string.h>
+
+struct employee{
+    int empid;
+    char name[100];
+    int salary;
+};
+
+int main(){
+    int n; printf("n: "); scanf("%d", &n);
+    struct employee *emp;
+    emp = (struct employee*) malloc(sizeof(struct employee*)*n);
+
+    for(int i = 0; i < n; i++){
+        printf("%d: empid: ", i); scanf("%d" , &emp[i].empid);
+        printf("%d: name: ", i); scanf("%s", emp[i].name);
+        printf("%d: salary: ", i); scanf("%d", &emp[i].salary);
+    }
+
+    int x; printf("x: "); scanf("%d", &x);
+    for(int i = 0; i < n; i++){
+        if(emp[i].empid == x){
+            printf("found at %d\n", i);
+            return 0;
+        }
+    }
+    printf("not found\n");
+    return 0;
+}
+\end{lstlisting}
+
+\textbf{Sample Input and Output:}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.25\linewidth]{imagdsfaadfe.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+\\
+\textbf{Result:} Executed a C program with dynamic memory allocation for an Employee structure, implementing linear search for a specific employee by EmpId.
+
+\clearpage
+\section{Experiment 10: Binary Search}
+\textbf{Aim:} Create a C program to read and sort student names stored in a file using bubble sort. Implement binary search as a separate function to search for a specific name in the sorted list.
+
+\textbf{Algorithm:}
+\begin{enumerate}
+  \item Start
+  \item Define a function named 'bubblesort' that takes a 2D array of names and its size 'n':
+    \begin{enumerate}
+      \item Iterate 'i' from 0 to 'n-1':
+        \begin{enumerate}
+          \item Iterate 'j' from 0 to 'n-i-1':
+            \begin{enumerate}
+              \item If the string at index 'j' is lexicographically greater than the string at index 'j+1', swap them
+            \end{enumerate}
+        \end{enumerate}
+    \end{enumerate}
+  \item Define a function named 'binarysearch' that takes a 2D array of names, its size 'n', and a target string 'x':
+    \begin{enumerate}
+      \item Initialize 'l' to -1 and 'r' to 'n'
+      \item While 'r - l is greater than 1':
+        \begin{enumerate}
+          \item Calculate the middle index 'm' using the formula \(m = l + \left\lfloor\frac{r - l}{2}\right\rfloor\)
+          \item If the string at index 'm' is less than or equal to 'x', set 'l' to 'm'
+          \item Otherwise, set 'r' to 'm'
+        \end{enumerate}
+      \item If 'l' is greater than or equal to 0 and the string at index 'l' is equal to 'x', return 'l'; otherwise, return -1
+    \end{enumerate}
+  \item In the main function:
+    \begin{enumerate}
+      \item Declare a 2D array 'names' to store the names
+      \item Open a file named "studentname.txt" for reading
+      \item If the file does not exist, print an error message and return 0
+      \item Initialize 'num' to 0
+      \item While reading strings from the file into 'names[num]' is successful, increment 'num'
+      \item Close the file
+      \item Sort the names using the 'bubblesort' function
+      \item Print the sorted names
+      \item Prompt the user to enter a name to search, store it in 'searchname'
+      \item Perform a binary search using the 'binarysearch' function
+      \item If the result is not -1, print "found at position" followed by the result; otherwise, print "not found"
+    \end{enumerate}
+  \item End
+\end{enumerate}
+
+
+\textbf{Program:}
+\lstset{language=C, basicstyle=\small\ttfamily, breaklines=true, numbers=left, numberstyle=\tiny\color{gray}, frame=single}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+#include <stdbool.h>
+#include <math.h>
+#include <string.h>
+
+void bubblesort(char names[100][100], int n){
+    for(int i = 0; i < n - 1; i++){
+        for(int j = 0; j < n - i - 1; j++){
+            if(strcmp(names[j], names[j + 1]) > 0){
+                char temp[100];
+                strcpy(temp, names[j]);
+                strcpy(names[j], names[j + 1]);
+                strcpy(names[j + 1], temp);
+            }
+        }
+    }
+}
+
+int binarysearch(char names[100][100], int n, char *x){
+    int l = -1, r = n;
+    while(r - l > 1){
+        int m = l + (r - l)/2;
+        if(strcmp(names[m], x) <= 0) l = m;
+        else r = m;
+    }
+    return (l >= 0 && strcmp(names[l], x) == 0)? l: -1;
+}
+
+int main(){
+    char names[100][100];
+    FILE *fp = fopen("studentname.txt", "r");
+    if(!fp){
+        printf("error\n");
+        return 0;
+    }
+
+    int num = 0;
+    while(fscanf(fp, "%s", names[num]) == 1){
+        num++;
+    }
+
+     
+    fclose(fp);
+    bubblesort(names, num);
+
+    printf("Sorted names: \n");
+    for(int i = 0; i < num; i++){
+        printf("%s\n", names[i]);
+    }
+
+    char searchname[100];
+    printf("enter name to search: ");
+    scanf("%s", searchname);
+    int result = binarysearch(names, num, searchname); 
+
+    if(result != -1){
+        printf("found at position %d\n", result);
+    }
+    else{
+        printf("not found\n");
+    }
+
+    return 0;
+}
+\end{lstlisting}
+
+\textbf{Sample Input and Output:}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.25\linewidth]{im3421age.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+
+\textbf{Result:} Developed a C program to read, sort student names using bubble sort, and implemented binary search for searching a specific name in the sorted list
+
+\end{document}
