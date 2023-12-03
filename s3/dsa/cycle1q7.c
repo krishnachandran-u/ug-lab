@@ -66,20 +66,17 @@ void display(struct PriorityQueue* pq){
 int main(){
     struct PriorityQueue mypq;
     initPQ(&mypq);
-    display(&mypq);
-    enPQ(&mypq, 30);
-    display(&mypq);
-    enPQ(&mypq, 25);
-    display(&mypq);
-    enPQ(&mypq, 40);
-    display(&mypq);
-    enPQ(&mypq, 10);
-    display(&mypq);
-    dPQ(&mypq);
-    display(&mypq);
-    dPQ(&mypq);
-    dPQ(&mypq);
-    dPQ(&mypq);
-    dPQ(&mypq);
-    return 0;
+    printf("1.push\n2.pop\n3.disp\n4.exit\n");
+
+    while(true) {
+        int ch;
+        scanf("%d", &ch);
+        int x;
+        switch(ch) {
+            case 1: scanf("%d", &x); enPQ(&mypq, x); break;
+            case 2: dPQ(&mypq); break;
+            case 3: display(&mypq); break;
+            case 4: exit(0); break;
+        }
+    } 
 }

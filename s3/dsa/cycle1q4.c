@@ -70,32 +70,19 @@ int main(){
     struct Q q;
     initQ(&q);
 
-    pushQ(&q, 1);
-    disp(&q);
-    pushQ(&q, 2);
-    disp(&q);
-    pushQ(&q, 3);
-    disp(&q);
-    pushQ(&q, 4);
-    disp(&q);
-    pushQ(&q, 5);
-    disp(&q);
+    printf("1.push\n2.pop\n3.disp\n4.exit\n");
 
-    popQ(&q);
-    disp(&q);
-    popQ(&q);
-    disp(&q);
-    popQ(&q);
-    disp(&q);
-    popQ(&q);
-    disp(&q);
-    popQ(&q);
-    disp(&q);
-    popQ(&q);
-    disp(&q);
-    popQ(&q);
-    disp(&q);
-    return 0;
+    while(true) {
+        int ch;
+        scanf("%d", &ch);
+        int x;
+        switch(ch) {
+            case 1: scanf("%d", &x); pushQ(&q, x); break;
+            case 2: popQ(&q); break;
+            case 3: disp(&q); break;
+            case 4: exit(0); break;
+        }
+    }
 }
 
 /*

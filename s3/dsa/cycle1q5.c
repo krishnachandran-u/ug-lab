@@ -52,9 +52,10 @@ int main(){
     printf("n: "); scanf("%d", &n); 
     init(&cq, n);
 
+    printf("1.push\n2.pop\n3.disp\n4.exit\n");
+
     while(true){
         int ch;
-        printf("1.push(x)\n2.pop\n3.display\n4.exi\n");
         scanf("%d", &ch);
         switch(ch){
             case 1: int x; printf("x: "); scanf("%d", &x); push(&cq, x);

@@ -91,10 +91,10 @@ void disp(struct Q* q){
 int main(){
     struct Q q;
     init(&q);
+    printf("1.push_front(x)\n2.push_back(x)\n3.pop_back\n4.pop_front\n5.display\n6.exit\n");
     while(true){
         int ch;
         int x;
-        printf("1.push_front(x)\n2.push_back(x)\n3.pop_back\n4.pop_front\n5.display\n6.exit\n");
         scanf("%d", &ch);
         switch(ch){
             case 1 : printf("x: "); scanf("%d", &x); push_front(&q, x); break;

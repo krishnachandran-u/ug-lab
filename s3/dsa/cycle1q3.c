@@ -58,49 +58,19 @@ int main(){
     struct S s; 
     init(&s);
     
-    push(&s, 1);
-    disp(&s);
-    push(&s, 2);
-    disp(&s);
-    push(&s, 3);
-    disp(&s);
-    push(&s, 4);
-    disp(&s);
-    push(&s, 5);
-    disp(&s);
+    printf("1.push\n2.pop\n3.disp\n4.exit\n");
 
-    pop(&s);
-    disp(&s);
-    pop(&s);
-    disp(&s);
-    pop(&s);
-    disp(&s);   
-    pop(&s);
-    disp(&s);
-    pop(&s);
-    disp(&s);
-    pop(&s);
-    disp(&s);
-    pop(&s);
-    disp(&s);
-
-    push(&s, 1);
-    disp(&s);
-    push(&s, 2);
-    disp(&s);
-    
-    pop(&s);
-    disp(&s);
-    pop(&s);
-    disp(&s);
-    pop(&s);
-    disp(&s);   
-    pop(&s);
-    disp(&s);
-    pop(&s);
-    disp(&s);
-
-    return 0;
+    while(true) {
+        int ch;
+        scanf("%d", &ch);
+        int x;
+        switch(ch) {
+            case 1: scanf("%d", &x); push(&s, x); break;
+            case 2: pop(&s); break;
+            case 3: disp(&s); break;
+            case 4: exit(0); break;
+        }
+    }
 }
 
 /*
