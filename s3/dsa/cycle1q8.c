@@ -1,128 +1,66 @@
 #include <stdio.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <math.h>
-#include <limits.h>
+#include <ctype.h>
 
-struct Stack {
-    char a[100];
-    int sz;
-};
+#define MAX_SIZE 100
 
-typedef struct Stack Stack;
+char stack[MAX_SIZE];
+int top = -1;
 
-void initStack(Stack* stk) {
-    stk->sz = 0;
-}
-
-void push(Stack* stk, char ch) {
-    stk->a[stk->sz] = ch;
-    stk->sz++;
-}
-
-bool isEmpty(Stack* stk) {
-    return (stk->sz == 0);
-}
-
-int top(Stack* stk) {
-    if(isEmpty(stk)) {
-        printf ("--empty--\n");
-        return INT_MAX;
-    }
-    return (stk->a[stk->sz - 1]);
-}
-
-char pop(Stack* stk) {
-    if(isEmpty(stk)) {
-        return '?'; //no action
-    }
-    char ch = top(stk);
-    stk->sz--;
-    return ch;
-}
-
-void action(Stack* opstack, Stack* postfix, char ch) {
-    if(ch >= 'a' && ch <= 'z') {
-        pushToPostfix(postfix, ch); 
-    }
-    if(ch == '(' || isEmpty(postfix) == 0) {
-        pushToOPStack(opstack, ch);
-    }
-    if(ch == ')') {
-        popTill(opstack, postfix, ')');
+void push(char x) {
+    if (top == MAX_SIZE - 1) {
+        printf("Stack Overflow\n");
         return;
     }
-    if(getPrecedence(ch) == getPrecedence(top(postfix)) {
-        if(getAssociativity(ch) == 1) {
-            popTill(ch);
-            return;
+    stack[++top] = x;
+}
+
+char pop() {
+    if (top == -1) {
+        return '\0'; // Use null character to indicate stack underflow
+    } else {
+        return stack[top--];
+    }
+}
+
+int priority(char x) {
+    if (x == '(') return 0;
+    if (x == '+' || x == '-') return 1;
+    if (x == '*' || x == '/') return 2;
+    return 0;
+}
+
+void infixToPostfix(char *exp) {
+    char *e = exp;
+    char x;
+
+    while (*e != '\0') {
+        if (isalnum(*e)) {
+            printf("%c ", *e);
+        } else if (*e == '(') {
+            push(*e);
+        } else if (*e == ')') {
+            while ((x = pop()) != '(')
+                printf("%c ", x);
+        } else {
+            while (top != -1 && priority(stack[top]) >= priority(*e))
+                printf("%c ", pop());
+            push(*e);
         }
-        if(getAssociativity(ch) == 2) {
-            pushToOPStack(ch);
-            return;
-        }
+        e++;
     }
-    if(getPrecedence(ch) > getPrecedence(top(postfix))) {
-        pushToOPStack(opstack, ch);
-        return;
-    }
-    if(getPrecedence(ch) < getPrecedence(top(postfix))) {
-        popTill(opstack, postfix, ch);
-    }
-}
 
-void pushToPostfix(Stack* postfix, char ch) {
-    push(postfix, ch);
-    return;
-}
-
-void pushToOPstack(Stack* opstack, char ch) {
-    push(opstack, ch);
-    return;
-}
-
-void popTill(Stack* opstack, Stack* postfix, char ch) {
-    while(!isEmpty(opstack) && getPrecedence(ch) <= getPrecedence(top(opstack))) {
-        if(top(opstack) == ')') {
-            
-        }
-        char tmp = pop(opstack);
-        pushToPostfix(postfix, tmp);
+    while (top != -1) {
+        printf("%c ", pop());
     }
-}
-
-int getPrecedence(char ch) {
-    if(ch == '+' || ch == '-') {
-        return 1; 
-    }
-    if(ch == '*' || ch == '/') {
-        return 2;
-    }
-    if(ch == '^') {
-        return 3;
-    }
-}
-
-int getAssociativity(char ch) {
-    if(ch == '+' || ch == '-' || ch == '*' || ch == '/') {
-        return 1;
-    }
-    if(ch == '^') {
-        return 2;
-    }
-}
-
-char* infixToPostfix(char* a){
-    Stack* opstack = (Stack*)malloc(sizeof(Stack));
-    Stack* postfix = (Stack*)malloc(sizeof(Stack));
-    for(int i = 0; a[i] != '\0'; i++){
-        action(opstack, postfix, a[i]);
-    }
-    return postfix;
 }
 
 int main() {
-    char* a = (char*)malloc(100*sizeof(char));
-    scanf("%s", a);
+    char exp[MAX_SIZE];
+    printf("Enter the expression: ");
+    scanf("%s", exp);
 
+    printf("Postfix Expression: ");
+    infixToPostfix(exp);
+
+    return 0;
 }
