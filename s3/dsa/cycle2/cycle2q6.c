@@ -20,197 +20,126 @@ void init(BST* bst) {
     bst->root = NULL;
 }
 
+Node* createNode(int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
+}
 
-void insertNode(Node* node, Node* parent, int x) {
-    if(node == NULL) {
-        Node* newnode = (Node*)malloc(sizeof(Node));
-        newnode->left = NULL;
-        newnode->data = x;
-        newnode->right = NULL;
-        if(parent != NULL) {
-            if(x < parent->data) {
-                parent->left = newnode;
-            }
-            else {
-                parent->right = newnode;
-            }
+Node* insertNode(Node* root, int data) {
+    if (root == NULL) {
+        return createNode(data);
+    }
+
+    if (data < root->data) {
+        root->left = insertNode(root->left, data);
+    } else if (data > root->data) {
+        root->right = insertNode(root->right, data);
+    }
+
+    return root;
+}
+
+Node* minValueNode(Node* node) {
+    Node* current = node;
+
+    while (current && current->left != NULL) {
+        current = current->left;
+    }
+
+    return current;
+}
+
+Node* deleteNode(Node* root, int data) {
+    if (root == NULL) {
+        return root;
+    }
+
+    if (data < root->data) {
+        root->left = deleteNode(root->left, data);
+    } else if (data > root->data) {
+        root->right = deleteNode(root->right, data);
+    } else {
+        if (root->left == NULL) {
+            Node* temp = root->right;
+            free(root);
+            return temp;
+        } else if (root->right == NULL) {
+            Node* temp = root->left;
+            free(root);
+            return temp;
         }
-        else {
-            node = newnode; 
-        }
+
+        Node* temp = minValueNode(root->right);
+        root->data = temp->data;
+        root->right = deleteNode(root->right, temp->data);
+    }
+
+    return root;
+}
+
+void deleteBST(Node* root) {
+    if (root == NULL) {
         return;
     }
-    else if(x < node->data) {
-        insertNode(node->left, node, x);
-    }
-    else {
-        insertNode(node->right, node, x);
-    }
+
+    deleteBST(root->left);
+    deleteBST(root->right);
+    free(root);
 }
 
-void insert(BST* bst, int x) {
-    if(bst->root == NULL) {
-        Node* newnode = (Node*)malloc(sizeof(Node));
-        newnode->data = x;
-        newnode->left = NULL;
-        newnode->right = NULL;
-        bst->root = newnode;
-    }
-    else {
-        insertNode(bst->root, NULL, x);
-    }
-}
-
-void inorder(Node* node) {
-    if(node == NULL) {
+void displayInorder(Node* root) {
+    if (root == NULL) {
         return;
     }
-    inorder(node->left);
-    printf("%d\t", node->data);
-    inorder(node->right);
-}
 
-void preorder(Node* node) {
-    if(node == NULL) {
-        return;
-    }
-    printf("%d\t", node->data);
-    preorder(node->left);
-    preorder(node->right);
-}
-
-void postorder(Node* node) {
-    if(node == NULL) {
-        return;
-    }
-    postorder(node->left);
-    postorder(node->right);
-    printf("%d\t", node->data);
-}
-
-void search(Node* node, int x) {
-    if(node == NULL) {
-        printf("not found\n");
-        return;
-    }
-    else if(node->data == x) {
-        printf("found\n");
-    }
-    else if(x < node->data) {
-        search(node->left, x);
-    }
-    else {
-        search(node->right, x);
-    }
-}
-
-void deleteNode(Node* node, Node* parent, int x) {
-    if(node == NULL) {
-        printf("not found node\n");
-        return;
-    }
-    
-    if(node->data == x) {
-        if(node->left == NULL && node->right == NULL) {
-            if(x < parent->data) {
-                free(node);
-                parent->left = NULL;
-            }
-            else {
-                free(node);
-                parent->right = NULL;
-            }
-        }
-        else if(node->left != NULL) {
-            node->data= node->left->data;
-            free(node->left);
-            node->left = NULL;
-        }
-        else {
-            Node* tempnode = node;
-            Node* prevnode = NULL;
-            if(tempnode->right != NULL) {
-                prevnode = tempnode;
-                tempnode = tempnode->right;
-                while(tempnode->left != NULL) {
-                    prevnode = tempnode;
-                    tempnode = tempnode->left;
-                }
-            }
-            node->data = tempnode->data;
-            if(tempnode->data < prevnode->data) {
-                free(tempnode);
-                prevnode->left = NULL;
-            }
-            else {
-                free(tempnode);
-                prevnode->right = NULL;
-            }
-        }
-
-    }
-    else if(x < node->data) {
-        deleteNode(node->left, node, x);
-    }
-    else {
-        deleteNode(node->right, node, x);
-    }  
-}
-
-void delete(BST* bst, int x) {
-    if(bst->root != NULL && bst->root->data == x) {
-        if(bst->root->left == NULL && bst->root->right == NULL) {
-            Node* delnode = bst->root;
-            bst->root == NULL; 
-            free(delnode);
-        }
-        else if (bst->root->left != NULL){
-            bst->root->data = bst->root->left->data;
-            free(bst->root->left);
-            bst->root->left = NULL;
-        }
-        else {
-            Node* tempnode = bst->root;
-            Node* prevnode = NULL;
-            if(tempnode->right != NULL) {
-                prevnode = tempnode;
-                tempnode = tempnode->right;
-                while(tempnode->left != NULL) {
-                    prevnode = tempnode;
-                    tempnode = tempnode->left;
-                }
-            }
-            bst->root->data = tempnode->data;
-            if(tempnode->data < prevnode->data) {
-                free(tempnode);
-                prevnode->left = NULL;
-            }
-            else {
-                free(tempnode);
-                prevnode->right = NULL;
-            }
-        }
-    }
-    else {
-        deleteNode(bst->root, NULL, x);
-    }
+    displayInorder(root->left);
+    printf("%d ", root->data);
+    displayInorder(root->right);
 }
 
 int main() {
-    BST* bst = (BST*)malloc(sizeof(BST));
-    init(bst);
-    int ch, x; 
-    printf("1.insert(x)\n2.delete(x)\n3.search(x)\n4.inorder\n5.preorder\n6.postorder\n7.return\n");
-    while(true) {
-        scanf("%d", &ch);
-        switch(ch) {
-            case 1: scanf("%d", &x); insert(bst, x); break;
-            case 2: scanf("%d", &x); delete(bst, x); break;
-            case 3: scanf("%d", &x); search(bst->root, x); break;
-            case 4: inorder(bst->root); printf("\n"); break;
-            case 5: preorder(bst->root); printf("\n"); break;
-            case 6: postorder(bst->root); printf("\n"); break;
-            case 7: return 0;
+    BST bst;
+    init(&bst);
+
+    int choice, data;
+
+    do {
+        printf("\nBinary Search Tree Operations:\n");
+        printf("1. Insert\n");
+        printf("2. Delete\n");
+        printf("3. Display\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter the data to be inserted: ");
+                scanf("%d", &data);
+                bst.root = insertNode(bst.root, data);
+                break;
+            case 2:
+                printf("Enter the data to be deleted: ");
+                scanf("%d", &data);
+                bst.root = deleteNode(bst.root, data);
+                break;
+            case 3:
+                printf("Binary Search Tree: ");
+                displayInorder(bst.root);
+                printf("\n");
+                break;
+            case 4:
+                printf("Exiting...\n");
+                break;
+            default:
+                printf("Invalid choice! Please try again.\n");
         }
-    }
+    } while (choice != 4);
+
+    deleteBST(bst.root);
+
+    return 0;
 }
