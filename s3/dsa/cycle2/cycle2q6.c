@@ -20,6 +20,7 @@ void init(BST* bst) {
     bst->root = NULL;
 }
 
+
 void insertNode(Node* node, Node* parent, int x) {
     if(node == NULL) {
         Node* newnode = (Node*)malloc(sizeof(Node));
@@ -44,6 +45,19 @@ void insertNode(Node* node, Node* parent, int x) {
     }
     else {
         insertNode(node->right, node, x);
+    }
+}
+
+void insert(BST* bst, int x) {
+    if(bst->root == NULL) {
+        Node* newnode = (Node*)malloc(sizeof(Node));
+        newnode->data = x;
+        newnode->left = NULL;
+        newnode->right = NULL;
+        bst->root = newnode;
+    }
+    else {
+        insertNode(bst->root, NULL, x);
     }
 }
 
@@ -90,32 +104,96 @@ void search(Node* node, int x) {
     }
 }
 
-void delete(Node* node, Node* parent, int x) {
+void deleteNode(Node* node, Node* parent, int x) {
     if(node == NULL) {
         printf("not found node\n");
         return;
     }
     
-    else if(node->data == x) {
-        if(parent == NULL) {
-            Node* delnode = node;
-            free(delnode);
-            node = NULL;
+    if(node->data == x) {
+        if(node->left == NULL && node->right == NULL) {
+            if(x < parent->data) {
+                free(node);
+                parent->left = NULL;
+            }
+            else {
+                free(node);
+                parent->right = NULL;
+            }
         }
-        else if (x < parent->data) {
-            parent->left = NULL;
+        else if(node->left != NULL) {
+            node->data= node->left->data;
+            free(node->left);
+            node->left = NULL;
         }
         else {
-            parent->right = NULL;
+            Node* tempnode = node;
+            Node* prevnode = NULL;
+            if(tempnode->right != NULL) {
+                prevnode = tempnode;
+                tempnode = tempnode->right;
+                while(tempnode->left != NULL) {
+                    prevnode = tempnode;
+                    tempnode = tempnode->left;
+                }
+            }
+            node->data = tempnode->data;
+            if(tempnode->data < prevnode->data) {
+                free(tempnode);
+                prevnode->left = NULL;
+            }
+            else {
+                free(tempnode);
+                prevnode->right = NULL;
+            }
         }
-        free(node);
+
     }
     else if(x < node->data) {
-        delete(node->left, node, x);
+        deleteNode(node->left, node, x);
     }
     else {
-        delete(node->right, node, x);
+        deleteNode(node->right, node, x);
     }  
+}
+
+void delete(BST* bst, int x) {
+    if(bst->root != NULL && bst->root->data == x) {
+        if(bst->root->left == NULL && bst->root->right == NULL) {
+            Node* delnode = bst->root;
+            bst->root == NULL; 
+            free(delnode);
+        }
+        else if (bst->root->left != NULL){
+            bst->root->data = bst->root->left->data;
+            free(bst->root->left);
+            bst->root->left = NULL;
+        }
+        else {
+            Node* tempnode = bst->root;
+            Node* prevnode = NULL;
+            if(tempnode->right != NULL) {
+                prevnode = tempnode;
+                tempnode = tempnode->right;
+                while(tempnode->left != NULL) {
+                    prevnode = tempnode;
+                    tempnode = tempnode->left;
+                }
+            }
+            bst->root->data = tempnode->data;
+            if(tempnode->data < prevnode->data) {
+                free(tempnode);
+                prevnode->left = NULL;
+            }
+            else {
+                free(tempnode);
+                prevnode->right = NULL;
+            }
+        }
+    }
+    else {
+        deleteNode(bst->root, NULL, x);
+    }
 }
 
 int main() {
@@ -126,8 +204,8 @@ int main() {
     while(true) {
         scanf("%d", &ch);
         switch(ch) {
-            case 1: scanf("%d", &x); insertNode(bst->root, NULL, x); printf("%d\n", bst->root->data); break;
-            case 2: scanf("%d", &x); delete(bst->root, NULL, x); break;
+            case 1: scanf("%d", &x); insert(bst, x); break;
+            case 2: scanf("%d", &x); delete(bst, x); break;
             case 3: scanf("%d", &x); search(bst->root, x); break;
             case 4: inorder(bst->root); printf("\n"); break;
             case 5: preorder(bst->root); printf("\n"); break;
