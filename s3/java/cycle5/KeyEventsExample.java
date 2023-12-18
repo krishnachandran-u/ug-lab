@@ -6,10 +6,14 @@ public class KeyEventsExample extends Frame {
 
     public KeyEventsExample() {
         lblMessage = new Label();
-        lblMessage.setBounds(50, 50, 200, 30);
+        lblMessage.setBounds(20, 50, 200, 30);
         add(lblMessage);
 
         addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                lblMessage.setText("Key Typed: " + e.getKeyChar());
+            }
+
             public void keyPressed(KeyEvent e) {
                 lblMessage.setText("Key Pressed: " + e.getKeyChar());
             }
