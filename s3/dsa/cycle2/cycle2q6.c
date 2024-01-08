@@ -106,12 +106,13 @@ int main() {
 
     int choice, data;
 
+    printf("\nBinary Search Tree Operations:\n");
+    printf("1. Insert\n");
+    printf("2. Delete\n");
+    printf("3. Display\n");
+    printf("4. Exit\n");
+
     do {
-        printf("\nBinary Search Tree Operations:\n");
-        printf("1. Insert\n");
-        printf("2. Delete\n");
-        printf("3. Display\n");
-        printf("4. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 

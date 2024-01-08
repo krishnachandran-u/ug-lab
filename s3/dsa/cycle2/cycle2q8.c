@@ -170,34 +170,40 @@ int main() {
     printf("4. Merge Sort\n");
     printf("5. Quick Sort\n");
 
-    printf("Enter your choice: ");
-    scanf("%d", &choice);
+    insertionSort(numbers, 10);
+    printf("Sorted using Insertion Sort: ");   
 
-    switch (choice) {
-        case 1:
-            insertionSort(numbers, 10);
-            printf("Sorted using Insertion Sort: ");
-            break;
-        case 2:
-            selectionSort(numbers, 10);
-            printf("Sorted using Selection Sort: ");
-            break;
-        case 3:
-            heapSort(numbers, 10);
-            printf("Sorted using Heap Sort: ");
-            break;
-        case 4:
-            mergeSort(numbers, 0, 9);
-            printf("Sorted using Merge Sort: ");
-            break;
-        case 5:
-            quickSort(numbers, 0, 9);
-            printf("Sorted using Quick Sort: ");
-            break;
-        default:
-            printf("Invalid choice.\n");
-            return 1;
+    for (i = 0; i < 10; i++) {
+        printf("%d ", numbers[i]);
     }
+    printf("\n");
+
+    selectionSort(numbers, 10);
+    printf("Sorted using Selection Sort: ");
+
+    for (i = 0; i < 10; i++) {
+        printf("%d ", numbers[i]);
+    }
+    printf("\n");
+
+    heapSort(numbers, 10);
+    printf("Sorted using Heap Sort: ");
+
+    for (i = 0; i < 10; i++) {
+        printf("%d ", numbers[i]);
+    }
+    printf("\n");
+
+    mergeSort(numbers, 0, 9);
+    printf("Sorted using Merge Sort: ");
+
+    for (i = 0; i < 10; i++) {
+        printf("%d ", numbers[i]);
+    }
+    printf("\n");
+
+    quickSort(numbers, 0, 9);
+    printf("Sorted using Quick Sort: ");
 
     for (i = 0; i < 10; i++) {
         printf("%d ", numbers[i]);
