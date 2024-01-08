@@ -1,0 +1,2354 @@
+\documentclass{article}
+
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{times}
+\usepackage{datetime}
+
+\geometry{a4paper, margin=1in}
+
+% Define fancy page style
+\pagestyle{fancy}
+\fancyhf{} % Clear existing headers and footers
+
+% Header definition
+\fancyhead[L]{Experiment \thesection} % Experiment number on the left
+\fancyhead[R]{\today} % Date on the right
+\renewcommand{\headrulewidth}{1pt} % Optional: Add a rule under the header
+
+\title{Lab Cycle 2 Report}
+\author{Krishnachandran U}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents % Table of Contents
+
+% Repeat the following sections for each experiment (2 to 10)
+\clearpage
+\fancyhead[R]{22-11-2023}
+\section{Experiment 1: Linked List}
+\textbf{Aim:} Implemented a menu-driven C program for performing various operations on a linked list, including display, insertion at the beginning, end, and a specified position, as well as deletion from the beginning, end, and a specified position.
+\\
+\textbf{Algorithm:}
+\begin{enumerate}
+  \item Start
+  \item Define a structure \texttt{Node}:
+    \begin{enumerate}
+      \item Integer data (\texttt{d})
+      \item Pointer to the next node (\texttt{next})
+    \end{enumerate}
+  \item Define a structure \texttt{LL}:
+    \begin{enumerate}
+      \item Integer size (\texttt{sz})
+      \item Pointer to the head node (\texttt{head})
+    \end{enumerate}
+  \item Define function \texttt{init} to initialize a linked list:
+    \begin{enumerate}
+      \item Set size (\texttt{sz}) to 0
+      \item Set head (\texttt{head}) to \texttt{NULL}
+    \end{enumerate}
+  \item Define function \texttt{display} to display the elements of the linked list:
+    \begin{enumerate}
+      \item Initialize a temporary node (\texttt{tempnode}) to the head of the linked list
+      \item Iterate over the linked list and print the data of each node
+    \end{enumerate}
+  \item Define function \texttt{insertBegin} to insert an element at the beginning of the linked list:
+    \begin{enumerate}
+      \item If the linked list is empty:
+        \begin{enumerate}
+          \item Allocate memory for a new node (\texttt{newnode})
+          \item Set data (\texttt{d}) of \texttt{newnode} to the given value (\texttt{x})
+          \item Set \texttt{next} of \texttt{newnode} to \texttt{NULL}
+          \item Set head (\texttt{head}) to \texttt{newnode}
+        \end{enumerate}
+      \item If the linked list is not empty:
+        \begin{enumerate}
+          \item Allocate memory for a new node (\texttt{newnode})
+          \item Set data (\texttt{d}) of \texttt{newnode} to the given value (\texttt{x})
+          \item Set \texttt{next} of \texttt{newnode} to the current head (\texttt{head})
+          \item Set head (\texttt{head}) to \texttt{newnode}
+        \end{enumerate}
+      \item Increment size (\texttt{sz})
+    \end{enumerate}
+  \item Define other linked list operations (\texttt{insertEnd}, \texttt{insertAtPos}, \texttt{deleteBegin}, \texttt{deleteEnd}, \texttt{deleteAtPos}) similarly
+  \item In the main function:
+    \begin{enumerate}
+      \item Initialize a linked list (\texttt{ll}) using the \texttt{init} function
+      \item Perform a sequence of linked list operations (insertion, deletion)
+      \item Display the linked list after each operation using the \texttt{display} function
+    \end{enumerate}
+  \item End
+\end{enumerate}
+
+\textbf{Program:}
+\lstset{language=C, basicstyle=\small\ttfamily, breaklines=true, numbers=left, numberstyle=\tiny\color{gray}, frame=single}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <stdbool.h>
+
+struct Node{
+    int d;
+    struct Node* next;
+};
+
+typedef struct Node Node;
+
+struct LL{
+    int sz;
+    Node* head;
+};
+
+typedef struct LL LL;
+
+void init(LL* ll){
+    ll->sz = 0;
+    ll->head = NULL; 
+}
+
+void display(LL *ll){
+    Node* tempnode = ll->head;
+    for(int i = 0; i < ll->sz; i++){
+        printf("%d  ", tempnode->d);
+        tempnode = tempnode->next;
+    }
+    printf("\n"); 
+
+    return;
+}
+
+void insertBegin(LL *ll, int x){
+    if(ll->sz == 0){
+        ll->head = (Node*)malloc(sizeof(Node));
+        ll->head->d = x;
+        ll->head->next = NULL; 
+    }
+    else{
+        Node* newnode = (Node*)malloc(sizeof(Node));
+        newnode->d = x;
+        newnode->next = ll->head;
+        ll->head = newnode;
+    }
+
+    ll->sz++;
+
+    return;
+}
+
+void insertEnd(LL *ll, int x){
+    if(ll->sz == 0){
+        ll->head = (Node*)malloc(sizeof(Node));
+        ll->head->d = x;
+        ll->head->next = NULL; 
+    }
+    else{
+        Node* tempnode = ll->head;
+        for(int i = 0; i < ll->sz - 1; i++){
+            tempnode = tempnode->next;
+        }
+        Node* newnode = (Node*)malloc(sizeof(Node));
+        newnode->d = x;
+        newnode->next = NULL;
+        tempnode->next = newnode;
+    }
+
+    ll->sz++;
+
+    return;
+}
+
+void insertAtPos(LL *ll, int x, int k){
+    if(ll->sz == 0){
+        printf("key not found\n");
+        return;
+    }
+    else{
+        Node* tempnode = ll->head; 
+        for(int i = 0; i < ll->sz; i++){
+            if(tempnode->d == k){
+                break;
+            }
+            tempnode = tempnode->next;
+        }
+        if(tempnode == NULL){
+            printf("key not found\n");
+        }
+        else{
+            Node* newnode = (Node*)malloc(sizeof(Node));
+            newnode->d = x;
+            newnode->next = tempnode->next;
+            tempnode->next = newnode;
+
+            ll->sz++;
+        }
+    }
+    return;
+}
+
+void deleteBegin(LL *ll){
+    if(ll->sz == 0){
+        printf("empty cannot delete\n");
+    }
+    else{
+        Node* delnode = ll->head;
+        ll->head = ll->head->next;
+        free(delnode);
+
+        ll->sz--;
+    }
+
+    return;
+}
+
+void deleteEnd(LL *ll){
+    if(ll->sz == 0){
+        printf("empty cannot delete\n");
+    }
+    else if(ll->sz == 1){
+        Node* delnode = ll->head;
+        ll->head = ll->head->next;
+        free(delnode);
+        ll->sz--;
+    }
+    else{
+        Node* tempnode = ll->head;
+        for(int i = 0; i < ll->sz; i++){
+            tempnode = tempnode->next;
+        }       
+        Node* delnode = tempnode->next;
+        free(delnode);
+        tempnode->next = NULL;
+
+        ll->sz--;
+    }
+
+    return;
+}
+
+void deleteAtPos(LL *ll, int k){
+    if(ll->sz == 0){
+        printf("empty cannot delete\n");
+    }
+    else if(ll->sz == 1){
+        if(ll->head->d == k){
+            Node* delnode = ll->head;
+            ll->head = ll->head->next;
+            free(delnode);
+            ll->sz--;
+        }
+        else{
+            printf("key not found\n");
+        }
+    }
+    else{
+        Node* prevnode = NULL;
+        Node* tempnode = ll->head;
+        for(int i = 0; i < ll->sz; i++){
+            if(tempnode->d == k){
+                break;
+            }
+            prevnode = tempnode;
+            tempnode = tempnode->next;
+        }
+        if(tempnode == NULL){
+            printf("key not found\n");
+        }
+        else{
+            prevnode->next = prevnode->next->next;
+            free(tempnode);
+            ll->sz--;
+        }
+        return;
+    }
+}
+
+int main(){
+    LL *ll = (LL*)malloc(sizeof(LL));
+    init(ll);
+    int x, k, ch;
+    printf("1.insertBegin(ll, x)\n2.insertEnd(ll, x)\n3.insertAtPos(ll, x, k)\n4.deleteBegin(ll)\n5.deleteEnd(ll)\n6.deleteAtPos(ll, k)\n7.display(ll)\n8.exit()\n");
+    while(true){
+        printf("ch: "); scanf("%d", &ch);
+        switch(ch){
+            case 1: scanf("%d", &x); insertBegin(ll, x); break;
+            case 2: scanf("%d", &x); insertEnd(ll, x); break; 
+            case 3: scanf("%d%d", &x, &k); insertAtPos(ll, x, k); break;
+            case 4: deleteBegin(ll); break;
+            case 5: deleteEnd(ll); break;
+            case 6: scanf("%d", &k); deleteAtPos(ll, k); break;
+            case 7: display(ll); break;
+            case 8: exit(0);
+        }
+    }
+}
+\end{lstlisting}
+\textbf{Sample Input and Output:}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.25\linewidth]{exp1.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+\\
+\textbf{Result:} Implemented a C program for polynomial manipulation using arrays, including addition and display of polynomials.
+
+% Add more experiments (sections) as needed
+\clearpage
+\fancyhead[R]{22-11-23}
+\section{Experiment 2: Polynomials using Linked List}
+\textbf{Aim:} Write a C program to read and store two polynomials using a linked list. Perform multiplication and addition operations on the polynomials, storing the results in a linked list, and display the resultant polynomials.
+
+\textbf{Algorithm:}
+\subsection*{1. Start}
+
+\subsection*{2. Define Polynomial Term Structure (\texttt{struct Term})}
+
+\begin{itemize}
+  \item \textbf{Attributes:}
+    \begin{itemize}
+      \item \texttt{coefficient}: Integer representing the coefficient of the term.
+      \item \texttt{exponent}: Integer representing the exponent of the term.
+      \item \texttt{next}: Pointer to the next term in the polynomial.
+    \end{itemize}
+\end{itemize}
+
+\subsection*{3. Create Term (\texttt{createTerm(int coefficient, int exponent)})}
+
+\begin{itemize}
+  \item Allocate memory for a new term.
+  \item Set coefficient, exponent, and initialize next pointer.
+  \item Return the created term.
+\end{itemize}
+
+\subsection*{4. Insert Term (\texttt{insertTerm(Term** polynomial, int coefficient, int exponent)})}
+
+\begin{itemize}
+  \item Create a new term using \texttt{createTerm}.
+  \item If the polynomial is empty, set the new term as the polynomial.
+  \item Otherwise, iterate to the end and append the new term.
+\end{itemize}
+
+\subsection*{5. Display Polynomial (\texttt{displayPolynomial(Term* polynomial)})}
+
+\begin{itemize}
+  \item Iterate through the polynomial and print each term.
+\end{itemize}
+
+\subsection*{6. Multiply Polynomials (\texttt{multiplyPolynomials(Term* poly1, Term* poly2)})}
+
+\begin{itemize}
+  \item Initialize an empty result polynomial.
+  \item Iterate through each term in poly1 and poly2.
+  \item For each pair of terms, multiply coefficients and add exponents.
+  \item Insert the resulting term into the result polynomial.
+  \item Return the multiplied polynomial.
+\end{itemize}
+
+\subsection*{7. Add Polynomials (\texttt{addPolynomials(Term* poly1, Term* poly2)})}
+
+\begin{itemize}
+  \item Initialize an empty result polynomial.
+  \item Iterate through terms in both poly1 and poly2.
+  \item Compare exponents and add terms accordingly.
+  \item Insert the resulting terms into the result polynomial.
+  \item Return the sum polynomial.
+\end{itemize}
+
+\subsection*{8. Main Program (\texttt{main()})}
+
+\begin{itemize}
+  \item Initialize two polynomials (\texttt{poly1} and \texttt{poly2}).
+  \item Read coefficients and exponents from the user for each polynomial.
+  \item Perform polynomial multiplication and addition.
+  \item Display the product and sum polynomials.
+\end{itemize}
+
+\subsection*{9. End}
+
+
+\textbf{Program:}
+\lstset{language=C, basicstyle=\small\ttfamily, breaklines=true, numbers=left, numberstyle=\tiny\color{gray}, frame=single}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Term {
+    int coefficient;
+    int exponent;
+    struct Term* next;
+} Term;
+
+Term* createTerm(int coefficient, int exponent) {
+    Term* term = (Term*)malloc(sizeof(Term));
+    term->coefficient = coefficient;
+    term->exponent = exponent;
+    term->next = NULL;
+    return term;
+}
+
+void insertTerm(Term** polynomial, int coefficient, int exponent) {
+    Term* term = createTerm(coefficient, exponent);
+    if (*polynomial == NULL) {
+        *polynomial = term;
+    } else {
+        Term* curr = *polynomial;
+        while (curr->next != NULL) {
+            curr = curr->next;
+        }
+        curr->next = term;
+    }
+}
+
+void displayPolynomial(Term* polynomial) {
+    Term* curr = polynomial;
+    while (curr != NULL) {
+        printf("%dx^%d ", curr->coefficient, curr->exponent);
+        if (curr->next != NULL) {
+            printf("+ ");
+        }
+        curr = curr->next;
+    }
+    printf("\n");
+}
+
+Term* multiplyPolynomials(Term* poly1, Term* poly2) {
+    Term* result = NULL;
+    Term* curr1 = poly1;
+    while (curr1 != NULL) {
+        Term* curr2 = poly2;
+        while (curr2 != NULL) {
+            int coefficient = curr1->coefficient * curr2->coefficient;
+            int exponent = curr1->exponent + curr2->exponent;
+            insertTerm(&result, coefficient, exponent);
+            curr2 = curr2->next;
+        }
+        curr1 = curr1->next;
+    }
+    return result;
+}
+
+Term* addPolynomials(Term* poly1, Term* poly2) {
+    Term* result = NULL;
+    Term* curr1 = poly1;
+    Term* curr2 = poly2;
+    while (curr1 != NULL && curr2 != NULL) {
+        if (curr1->exponent > curr2->exponent) {
+            insertTerm(&result, curr1->coefficient, curr1->exponent);
+            curr1 = curr1->next;
+        } else if (curr1->exponent < curr2->exponent) {
+            insertTerm(&result, curr2->coefficient, curr2->exponent);
+            curr2 = curr2->next;
+        } else {
+            int coefficient = curr1->coefficient + curr2->coefficient;
+            int exponent = curr1->exponent;
+            insertTerm(&result, coefficient, exponent);
+            curr1 = curr1->next;
+            curr2 = curr2->next;
+        }
+    }
+    while (curr1 != NULL) {
+        insertTerm(&result, curr1->coefficient, curr1->exponent);
+        curr1 = curr1->next;
+    }
+    while (curr2 != NULL) {
+        insertTerm(&result, curr2->coefficient, curr2->exponent);
+        curr2 = curr2->next;
+    }
+    return result;
+}
+
+int main() {
+    Term* poly1 = NULL;
+    Term* poly2 = NULL;
+
+    int n1;
+    printf("Enter the number of terms for polynomial 1: ");
+    scanf("%d", &n1);
+    for (int i = 0; i < n1; i++) {
+        int coefficient, exponent;
+        printf("Enter the coefficient and exponent for term %d: ", i+1);
+        scanf("%d %d", &coefficient, &exponent);
+        insertTerm(&poly1, coefficient, exponent);
+    }
+
+    int n2;
+    printf("Enter the number of terms for polynomial 2: ");
+    scanf("%d", &n2);
+    for (int i = 0; i < n2; i++) {
+        int coefficient, exponent;
+        printf("Enter the coefficient and exponent for term %d: ", i+1);
+        scanf("%d %d", &coefficient, &exponent);
+        insertTerm(&poly2, coefficient, exponent);
+    }
+
+    Term* product = multiplyPolynomials(poly1, poly2);
+    displayPolynomial(product);
+
+    Term* sum = addPolynomials(poly1, poly2);
+    printf("Polynomial A:\n");
+    displayPolynomial(poly1);
+    printf("Polynomial B:\n");
+    displayPolynomial(poly2);
+    printf("Sum:\n");
+    displayPolynomial(sum);
+    return 0;
+}
+
+\end{lstlisting}
+
+\textbf{Sample Input and Output:}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.25\linewidth]{exp2.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+
+\textbf{Result:} Developed a C program to read and store two polynomials using a linked list. Implemented operations to find the product and sum of the polynomials, storing the results in linked lists, and displaying the resultant polynomials.
+
+\clearpage
+\fancyhead[R]{22-11-23}
+\section{Experiment 3: Stack using Linked List}
+\textbf{Aim:} Create a menu-driven C program to implement a stack using a linked list. Include operations to push elements onto the stack, pop elements from the stack, and display the stack after each operation.
+
+\textbf{Algorithm:}
+\begin{enumerate}
+  \item Start
+  \item Define a structure \texttt{Node}:
+    \begin{enumerate}
+      \item Integer data (\texttt{d})
+      \item Pointer to the next node (\texttt{next})
+    \end{enumerate}
+  \item Define a structure \texttt{LL}:
+    \begin{enumerate}
+      \item Integer size (\texttt{sz})
+      \item Pointer to the head node (\texttt{head})
+    \end{enumerate}
+  \item Define function \texttt{init} to initialize a linked list:
+    \begin{enumerate}
+      \item Set size (\texttt{sz}) to 0
+      \item Set head (\texttt{head}) to \texttt{NULL}
+    \end{enumerate}
+  \item Define function \texttt{display} to display the elements of the linked list:
+    \begin{enumerate}
+      \item Initialize a temporary node (\texttt{tempnode}) to the head of the linked list
+      \item Iterate over the linked list and print the data of each node
+    \end{enumerate}
+  \item Define function \texttt{insertEnd} to push an element onto the stack:
+    \begin{enumerate}
+      \item If the linked list is empty:
+        \begin{enumerate}
+          \item Allocate memory for a new node (\texttt{newnode})
+          \item Set data (\texttt{d}) of \texttt{newnode} to the given value (\texttt{x})
+          \item Set \texttt{next} of \texttt{newnode} to \texttt{NULL}
+          \item Set head (\texttt{head}) to \texttt{newnode}
+        \end{enumerate}
+      \item If the linked list is not empty:
+        \begin{enumerate}
+          \item Allocate memory for a new node (\texttt{newnode})
+          \item Set data (\texttt{d}) of \texttt{newnode} to the given value (\texttt{x})
+          \item Set \texttt{next} of the last node to \texttt{newnode}
+        \end{enumerate}
+      \item Increment size (\texttt{sz})
+    \end{enumerate}
+  \item Define function \texttt{deleteEnd} to pop an element from the stack:
+    \begin{enumerate}
+      \item If the linked list is empty, print an error message
+      \item If the linked list has only one node:
+        \begin{enumerate}
+          \item Set a temporary pointer (\texttt{delnode}) to the head of the linked list
+          \item Set head (\texttt{head}) to \texttt{NULL}
+          \item Free the memory of \texttt{delnode}
+          \item Decrement size (\texttt{sz})
+        \end{enumerate}
+      \item If the linked list has more than one node:
+        \begin{enumerate}
+          \item Set a temporary pointer (\texttt{tempnode}) to the head of the linked list
+          \item Iterate over the linked list to the second-to-last node
+          \item Set a temporary pointer (\texttt{delnode}) to the last node
+          \item Set \texttt{next} of the second-to-last node to \texttt{NULL}
+          \item Free the memory of \texttt{delnode}
+          \item Decrement size (\texttt{sz})
+        \end{enumerate}
+    \end{enumerate}
+  \item In the main function:
+    \begin{enumerate}
+      \item Initialize a linked list (\texttt{ll}) using the \texttt{init} function
+      \item Perform a sequence of push and pop operations
+      \item Display the linked list after each operation using the \texttt{display} function
+    \end{enumerate}
+  \item End
+\end{enumerate}
+
+
+
+\textbf{Program:}
+\lstset{language=C, basicstyle=\small\ttfamily, breaklines=true, numbers=left, numberstyle=\tiny\color{gray}, frame=single}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <stdbool.h>
+
+struct Node{
+    int d;
+    struct Node* next;
+};
+
+typedef struct Node Node;
+
+struct LL{
+    int sz;
+    Node* head;
+};
+
+typedef struct LL LL;
+
+void init(LL* ll){
+    ll->sz = 0;
+    ll->head = NULL; 
+}
+
+void display(LL *ll){
+    Node* tempnode = ll->head;
+    for(int i = 0; i < ll->sz; i++){
+        printf("%d  ", tempnode->d);
+        tempnode = tempnode->next;
+    }
+    printf("\n"); 
+
+    return;
+}
+
+void insertEnd(LL *ll, int x){
+    if(ll->sz == 0){
+        ll->head = (Node*)malloc(sizeof(Node));
+        ll->head->d = x;
+        ll->head->next = NULL; 
+    }
+    else{
+        Node* tempnode = ll->head;
+        for(int i = 0; i < ll->sz - 1; i++){
+            tempnode = tempnode->next;
+        }
+        Node* newnode = (Node*)malloc(sizeof(Node));
+        newnode->d = x;
+        newnode->next = NULL;
+        tempnode->next = newnode;
+    }
+
+    ll->sz++;
+
+    return;
+}
+
+void deleteEnd(LL *ll){
+    if(ll->sz == 0){
+        printf("empty cannot delete\n");
+    }
+    else if(ll->sz == 1){
+        Node* delnode = ll->head;
+        ll->head = ll->head->next;
+        free(delnode);
+        ll->sz--;
+    }
+    else{
+        Node* tempnode = ll->head;
+        for(int i = 0; i < ll->sz; i++){
+            tempnode = tempnode->next;
+        }       
+        Node* delnode = tempnode->next;
+        free(delnode);
+        tempnode->next = NULL;
+
+        ll->sz--;
+    }
+
+    return;
+}
+
+int main(){
+    LL *ll = (LL*)malloc(sizeof(LL));
+    init(ll);
+    int x, k, ch;
+    printf("1.push(x)\n2.pop(x)\n3.display()\n4.exit()\n");
+    while(true){
+        printf("ch: "); scanf("%d", &ch);
+        switch(ch){
+            case 1: scanf("%d", &x); insertEnd(ll, x); break; 
+            case 2: deleteEnd(ll); break;
+            case 3: display(ll); break;
+            case 4: exit(0);
+        }
+    }
+}
+\end{lstlisting}
+\textbf{Sample Input and Output:}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.25\linewidth]{exp3.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+\\
+\textbf{Result:} Created a menu-driven C program to implement a stack using a linked list. The program supports pushing elements onto the stack, popping elements from the stack, and displays the stack after each operation.
+
+\clearpage
+\fancyhead[R]{22-11-23}
+\section{Experiment 4: Queue using Linked List}
+\textbf{Aim:} Write a menu-driven C program to implement a queue using a linked list. Include operations to insert elements into the queue, delete elements from the queue, and display the queue after each operation.
+\\
+\textbf{Algorithm:}
+\begin{document}
+
+\begin{enumerate}
+  \item Start
+  \item Define a structure \texttt{Node}:
+    \begin{enumerate}
+      \item Integer data (\texttt{d})
+      \item Pointer to the next node (\texttt{next})
+    \end{enumerate}
+  \item Define a structure \texttt{LL}:
+    \begin{enumerate}
+      \item Integer size (\texttt{sz})
+      \item Pointer to the head node (\texttt{head})
+    \end{enumerate}
+  \item Define function \texttt{init} to initialize a linked list:
+    \begin{enumerate}
+      \item Set size (\texttt{sz}) to 0
+      \item Set head (\texttt{head}) to \texttt{NULL}
+    \end{enumerate}
+  \item Define function \texttt{display} to display the elements of the linked list:
+    \begin{enumerate}
+      \item Initialize a temporary node (\texttt{tempnode}) to the head of the linked list
+      \item Iterate over the linked list and print the data of each node
+    \end{enumerate}
+  \item Define function \texttt{insertEnd} to enqueue an element at the end of the linked list:
+    \begin{enumerate}
+      \item If the linked list is empty:
+        \begin{enumerate}
+          \item Allocate memory for a new node (\texttt{newnode})
+          \item Set data (\texttt{d}) of \texttt{newnode} to the given value (\texttt{x})
+          \item Set \texttt{next} of \texttt{newnode} to \texttt{NULL}
+          \item Set head (\texttt{head}) to \texttt{newnode}
+        \end{enumerate}
+      \item If the linked list is not empty:
+        \begin{enumerate}
+          \item Allocate memory for a new node (\texttt{newnode})
+          \item Set data (\texttt{d}) of \texttt{newnode} to the given value (\texttt{x})
+          \item Set \texttt{next} of the last node to \texttt{newnode}
+        \end{enumerate}
+      \item Increment size (\texttt{sz})
+    \end{enumerate}
+  \item Define function \texttt{deleteBegin} to dequeue an element from the beginning of the linked list:
+    \begin{enumerate}
+      \item If the linked list is empty, print an error message
+      \item If the linked list is not empty:
+        \begin{enumerate}
+          \item Set a temporary pointer (\texttt{delnode}) to the head of the linked list
+          \item Set head (\texttt{head}) to the next node
+          \item Free the memory of \texttt{delnode}
+          \item Decrement size (\texttt{sz})
+        \end{enumerate}
+    \end{enumerate}
+  \item In the main function:
+    \begin{enumerate}
+      \item Initialize a linked list (\texttt{ll}) using the \texttt{init} function
+      \item Perform a sequence of enqueue and dequeue operations
+      \item Display the linked list after each operation using the \texttt{display} function
+    \end{enumerate}
+  \item End
+\end{enumerate}
+
+
+\textbf{Program:}
+\lstset{language=C, basicstyle=\small\ttfamily, breaklines=true, numbers=left, numberstyle=\tiny\color{gray}, frame=single}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <stdbool.h>
+
+struct Node{
+    int d;
+    struct Node* next;
+};
+
+typedef struct Node Node;
+
+struct LL{
+    int sz;
+    Node* head;
+};
+
+typedef struct LL LL;
+
+void init(LL* ll){
+    ll->sz = 0;
+    ll->head = NULL; 
+}
+
+void display(LL *ll){
+    Node* tempnode = ll->head;
+    for(int i = 0; i < ll->sz; i++){
+        printf("%d  ", tempnode->d);
+        tempnode = tempnode->next;
+    }
+    printf("\n"); 
+
+    return;
+}
+
+void insertEnd(LL *ll, int x){
+    if(ll->sz == 0){
+        ll->head = (Node*)malloc(sizeof(Node));
+        ll->head->d = x;
+        ll->head->next = NULL; 
+    }
+    else{
+        Node* tempnode = ll->head;
+        for(int i = 0; i < ll->sz - 1; i++){
+            tempnode = tempnode->next;
+        }
+        Node* newnode = (Node*)malloc(sizeof(Node));
+        newnode->d = x;
+        newnode->next = NULL;
+        tempnode->next = newnode;
+    }
+
+    ll->sz++;
+
+    return;
+}
+
+void deleteBegin(LL *ll){
+    if(ll->sz == 0){
+        printf("empty cannot delete\n");
+    }
+    else{
+        Node* delnode = ll->head;
+        ll->head = ll->head->next;
+        free(delnode);
+
+        ll->sz--;
+    }
+
+    return;
+}
+
+int main(){
+    LL *ll = (LL*)malloc(sizeof(LL));
+    init(ll);
+    int x, k, ch;
+    printf("1.enqueue(ll, x)\n2.dequeue(ll)\n3.display(ll)\n4.exit()\n");
+    while(true){
+        printf("ch: "); scanf("%d", &ch);
+        switch(ch){
+            case 1: scanf("%d", &x); insertEnd(ll, x); break; 
+            case 2: deleteBegin(ll); break;
+            case 3: display(ll); break;
+            case 4: exit(0);
+        }
+    }
+}
+\end{lstlisting}
+
+\textbf{Sample Input and Output:}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.25\linewidth]{exp4.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+\\
+\textbf{Result:} Implemented a menu-driven C program for a queue using a linked list. The program allows inserting and deleting elements from the queue and displays the queue after each operation.
+
+\clearpage
+\fancyhead[R]{22-11-23}
+\section{Experiment 5: Binary Tree}
+\textbf{Aim:} Develop a menu-driven C program to create a binary tree using a linked list. Implement operations such as node insertion, inorder, preorder, and postorder traversals, and node deletion.
+\\
+\textbf{Algorithm:}
+\begin{enumerate}
+  \item Start
+  \item Define a structure \texttt{Node}:
+    \begin{enumerate}
+      \item Pointer to the left child (\texttt{left})
+      \item Integer data (\texttt{data})
+      \item Pointer to the right child (\texttt{right})
+    \end{enumerate}
+  \item Define a structure \texttt{Tree}:
+    \begin{enumerate}
+      \item Pointer to the root node (\texttt{root})
+    \end{enumerate}
+  \item Define function \texttt{init} to initialize a binary tree:
+    \begin{enumerate}
+      \item Allocate memory for the root node (\texttt{root})
+      \item Set left (\texttt{left}) of \texttt{root} to \texttt{NULL}
+      \item Set data (\texttt{data}) of \texttt{root} to the given value (\texttt{x})
+      \item Set right (\texttt{right}) of \texttt{root} to \texttt{NULL}
+    \end{enumerate}
+  \item Define function \texttt{insertNode} to insert a node into the binary tree:
+    \begin{enumerate}
+      \item If the current node is \texttt{NULL}, return
+      \item Recursively insert into the left subtree
+      \item If the data of the current node matches the given key (\texttt{k}):
+        \begin{enumerate}
+          \item If either left or right child is \texttt{NULL}, allocate a new node (\texttt{newnode}) and insert it as the left or right child
+        \end{enumerate}
+      \item Recursively insert into the right subtree
+    \end{enumerate}
+  \item Define function \texttt{deleteNode} to delete a node from the binary tree:
+    \begin{enumerate}
+      \item If the current node is \texttt{NULL}, return
+      \item Recursively delete from the left subtree
+      \item If the data of the current node matches the given value (\texttt{x}) and the node is a leaf node:
+        \begin{enumerate}
+          \item Update the parent's link to \texttt{NULL}
+          \item Free the current node
+        \end{enumerate}
+      \item Recursively delete from the right subtree
+    \end{enumerate}
+  \item Define functions for tree traversals (\texttt{inorder}, \texttt{preorder}, \texttt{postorder}) similarly
+  \item In the main function:
+    \begin{enumerate}
+      \item Initialize a binary tree (\texttt{tr}) using the \texttt{init} function
+      \item Perform a sequence of binary tree operations (initialization, insertion, deletion, traversals)
+    \end{enumerate}
+  \item End
+\end{enumerate}
+
+\textbf{Program:}
+\lstset{language=C, basicstyle=\small\ttfamily, breaklines=true, numbers=left, numberstyle=\tiny\color{gray}, frame=single}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <stdbool.h>
+
+struct Node {
+    struct Node* left;
+    int data;
+    struct Node* right;
+};
+
+struct Tree {
+    struct Node* root;
+};
+
+typedef struct Node Node;
+typedef struct Tree Tree;
+
+void init(Tree* tr, int x) {
+    tr->root = (Node*)malloc(sizeof(Node));
+    tr->root->left = NULL;
+    tr->root->data = x;
+    tr->root->right = NULL;
+}
+
+void insertNode(Node* node, int k, int x) { //uses inorderTraversal
+    if(node == NULL) {
+        return;
+    }
+    insertNode(node->left, k, x);
+
+    if(node->data == k) {
+        if(node->left == NULL || node->right == NULL){
+            Node* newnode = (Node*)malloc(sizeof(Node));
+            newnode->left = NULL;
+            newnode->data = x;
+            newnode->right = NULL;
+            if(node->left == NULL) {
+                node->left = newnode;
+            }
+            else if(node->right == NULL) {
+                node->right = newnode;
+            }
+        }
+        return;
+    }
+
+    insertNode(node->right, k, x);
+}
+
+void deleteNode(Node* node, Node* parent, int x) {
+    if(node == NULL) {
+        return;
+    }
+    deleteNode(node->left, node, x);
+    if(node->data == x && node->left == NULL && node->right == NULL) {
+        if(node == parent->left) {
+            parent->left = NULL;
+        }
+        else if(node == parent->right) {
+            parent->right = NULL;
+        }
+        free(node);
+    }
+    deleteNode(node->right, node, x);
+}
+
+void inorder(Node* node) {
+    if(node == NULL) {
+        return;
+    }
+    inorder(node->left);
+    printf("%d\t", node->data);
+    inorder(node->right);
+}
+
+void preorder(Node* node) {
+    if(node == NULL) {
+        return;
+    }
+    printf("%d\t", node->data);
+    preorder(node->left);
+    preorder(node->right);
+}
+
+void postorder(Node* node) {
+    if(node == NULL) {
+        return;
+    }
+    postorder(node->left);
+    postorder(node->right);
+    printf("%d\t", node->data);
+}
+
+int main() {
+    Tree* tr = (Tree*)malloc(sizeof(Tree));
+    printf("1.setRoot(x)\n2.insertNode(k, x)\n3.deleteNode(x)\n4.inorder()\n5.preorder()\n6.postorder()\n7.return\n");
+    int k, x;
+    while(true) {
+        int ch;
+        scanf("%d", &ch);
+        switch(ch) {
+            case 1: scanf("%d", &x); init(tr, x); break; 
+            case 2: scanf("%d%d", &k, &x); insertNode(tr->root, k, x); break;
+            case 3: scanf("%d", &x); deleteNode(tr->root, NULL,x); break;
+            case 4: inorder(tr->root); printf("\n"); break;
+            case 5: preorder(tr->root); printf("\n"); break;
+            case 6: postorder(tr->root); printf("\n"); break;
+            case 7: return 0; break;
+        }
+    }
+}
+\end{lstlisting}
+
+\textbf{Sample Input and Output:}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.25\linewidth]{exp5.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+
+\textbf{Result:} Developed a menu-driven C program for a binary tree using a linked list. The program supports node insertion, inorder, preorder, and postorder traversals, and node deletion.
+
+\clearpage
+\fancyhead[R]{13-12-23}
+\section{Experiment 6: Binary Search Tree}
+\textbf{Aim:} Write a C program to create and manipulate a binary search tree, including creation, insertion, deletion, and search operations.
+
+\textbf{Algorithm:}
+\begin{enumerate}
+  \item Start
+  \item Define a structure \texttt{Node}:
+    \begin{enumerate}
+      \item Pointer to the left child (\texttt{left})
+      \item Integer data (\texttt{data})
+      \item Pointer to the right child (\texttt{right})
+    \end{enumerate}
+  \item Define a structure \texttt{BST}:
+    \begin{enumerate}
+      \item Pointer to the root node (\texttt{root})
+    \end{enumerate}
+  \item Define function \texttt{init} to initialize a binary search tree:
+    \begin{enumerate}
+      \item Set root (\texttt{root}) to \texttt{NULL}
+    \end{enumerate}
+  \item Define function \texttt{createNode} to create a new node:
+    \begin{enumerate}
+      \item Allocate memory for a new node (\texttt{newNode})
+      \item Set data (\texttt{data}) of \texttt{newNode} to the given value (\texttt{data})
+      \item Set left (\texttt{left}) of \texttt{newNode} to \texttt{NULL}
+      \item Set right (\texttt{right}) of \texttt{newNode} to \texttt{NULL}
+      \item Return \texttt{newNode}
+    \end{enumerate}
+  \item Define function \texttt{insertNode} to insert a node into the binary search tree:
+    \begin{enumerate}
+      \item If the current root is \texttt{NULL}, create a new node and return it
+      \item If the data to be inserted is less than the root's data, recursively insert into the left subtree
+      \item If the data to be inserted is greater than the root's data, recursively insert into the right subtree
+      \item Return the modified root
+    \end{enumerate}
+  \item Define function \texttt{minValueNode} to find the node with the minimum value in a given subtree:
+    \begin{enumerate}
+      \item Initialize \texttt{current} to the given node
+      \item Iterate while \texttt{current} is not \texttt{NULL} and \texttt{current->left} is not \texttt{NULL}
+      \item Return \texttt{current}
+    \end{enumerate}
+  \item Define function \texttt{deleteNode} to delete a node from the binary search tree:
+    \begin{enumerate}
+      \item If the current root is \texttt{NULL}, return \texttt{NULL}
+      \item If the data to be deleted is less than the root's data, recursively delete from the left subtree
+      \item If the data to be deleted is greater than the root's data, recursively delete from the right subtree
+      \item If the data to be deleted is equal to the root's data:
+        \begin{enumerate}
+          \item If the left child is \texttt{NULL}, update the root to the right child and free the current root
+          \item If the right child is \texttt{NULL}, update the root to the left child and free the current root
+          \item Otherwise, find the node with the minimum value in the right subtree, replace the root's data with that value, and recursively delete that node
+        \end{enumerate}
+      \item Return the modified root
+    \end{enumerate}
+  \item Define function \texttt{deleteBST} to delete the entire binary search tree:
+    \begin{enumerate}
+      \item If the current root is \texttt{NULL}, return
+      \item Recursively delete the left subtree
+      \item Recursively delete the right subtree
+      \item Free the current root
+    \end{enumerate}
+  \item Define function \texttt{displayInorder} to display the nodes of the binary search tree in an inorder traversal:
+    \begin{enumerate}
+      \item If the current root is \texttt{NULL}, return
+      \item Recursively display the left subtree
+      \item Print the data of the current root
+      \item Recursively display the right subtree
+    \end{enumerate}
+  \item In the main function:
+    \begin{enumerate}
+      \item Initialize a binary search tree (\texttt{bst}) using the \texttt{init} function
+      \item Perform a sequence of binary search tree operations (insertion, deletion, display)
+      \item Delete the entire binary search tree using the \texttt{deleteBST} function
+    \end{enumerate}
+  \item End
+\end{enumerate}
+
+\textbf{Program:}
+\lstset{language=C, basicstyle=\small\ttfamily, breaklines=true, numbers=left, numberstyle=\tiny\color{gray}, frame=single}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <math.h>
+
+struct Node {
+    struct Node* left;
+    int data;
+    struct Node* right;
+};
+
+struct BST {
+    struct Node* root;
+};
+
+typedef struct Node Node;
+typedef struct BST BST;
+
+void init(BST* bst) {
+    bst->root = NULL;
+}
+
+Node* createNode(int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
+}
+
+Node* insertNode(Node* root, int data) {
+    if (root == NULL) {
+        return createNode(data);
+    }
+
+    if (data < root->data) {
+        root->left = insertNode(root->left, data);
+    } else if (data > root->data) {
+        root->right = insertNode(root->right, data);
+    }
+
+    return root;
+}
+
+Node* minValueNode(Node* node) {
+    Node* current = node;
+
+    while (current && current->left != NULL) {
+        current = current->left;
+    }
+
+    return current;
+}
+
+Node* deleteNode(Node* root, int data) {
+    if (root == NULL) {
+        return root;
+    }
+
+    if (data < root->data) {
+        root->left = deleteNode(root->left, data);
+    } else if (data > root->data) {
+        root->right = deleteNode(root->right, data);
+    } else {
+        if (root->left == NULL) {
+            Node* temp = root->right;
+            free(root);
+            return temp;
+        } else if (root->right == NULL) {
+            Node* temp = root->left;
+            free(root);
+            return temp;
+        }
+
+        Node* temp = minValueNode(root->right);
+        root->data = temp->data;
+        root->right = deleteNode(root->right, temp->data);
+    }
+
+    return root;
+}
+
+void deleteBST(Node* root) {
+    if (root == NULL) {
+        return;
+    }
+
+    deleteBST(root->left);
+    deleteBST(root->right);
+    free(root);
+}
+
+void displayInorder(Node* root) {
+    if (root == NULL) {
+        return;
+    }
+
+    displayInorder(root->left);
+    printf("%d ", root->data);
+    displayInorder(root->right);
+}
+
+int main() {
+    BST bst;
+    init(&bst);
+
+    int choice, data;
+
+    do {
+        printf("\nBinary Search Tree Operations:\n");
+        printf("1. Insert\n");
+        printf("2. Delete\n");
+        printf("3. Display\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter the data to be inserted: ");
+                scanf("%d", &data);
+                bst.root = insertNode(bst.root, data);
+                break;
+            case 2:
+                printf("Enter the data to be deleted: ");
+                scanf("%d", &data);
+                bst.root = deleteNode(bst.root, data);
+                break;
+            case 3:
+                printf("Binary Search Tree: ");
+                displayInorder(bst.root);
+                printf("\n");
+                break;
+            case 4:
+                printf("Exiting...\n");
+                break;
+            default:
+                printf("Invalid choice! Please try again.\n");
+        }
+    } while (choice != 4);
+
+    deleteBST(bst.root);
+
+    return 0;
+}
+\end{lstlisting}
+
+\textbf{Sample Input and Output:}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.25\linewidth]{exp6.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+\\
+\textbf{Result:} Created a C program to implement a binary search tree with operations for creation, insertion, deletion, and search.
+
+\clearpage
+\fancyhead[R]{13-12-23}
+\section{Experiment 7: Graph}
+\textbf{Aim:} Implement a C program to represent a graph and perform operations such as computing adjacency list and adjacency matrix, depth-first search, and breadth-first search.
+
+\textbf{Algorithm:}
+\begin{enumerate}
+  \item Start
+  \item Define a structure \texttt{Q} for the queue:
+    \begin{enumerate}
+      \item Integer array \texttt{a} for elements
+      \item Integer \texttt{cp} for capacity
+      \item Integer \texttt{f} for front index
+      \item Integer \texttt{r} for rear index
+    \end{enumerate}
+  \item Define functions for initializing the queue (\texttt{initQ}), checking if the queue is empty (\texttt{isEmpty}), pushing an element into the queue (\texttt{pushQ}), and popping an element from the queue (\texttt{popQ})
+  \item Initialize an adjacency matrix (\texttt{adjMatrix}) and an array for adjacency lists (\texttt{adjList})
+  \item Define a function \texttt{dfs} to perform Depth-First Search:
+    \begin{enumerate}
+      \item Mark the current vertex as visited
+      \item Print the current vertex
+      \item Recursively call \texttt{dfs} for all adjacent vertices not yet visited
+    \end{enumerate}
+  \item In the \texttt{main} function:
+    \begin{enumerate}
+      \item Initialize the adjacency matrix (\texttt{adjMatrix}) with zeros
+      \item Input the number of vertices (\texttt{vert}) and edges (\texttt{edg})
+      \item Input each edge and update the adjacency matrix
+      \item Display the adjacency matrix
+      \item Display the adjacency lists
+      \item Initialize an array \texttt{visited} for DFS
+      \item Perform DFS starting from vertex 0 and print the visited vertices
+      \item Initialize a queue (\texttt{Q}) for BFS using the \texttt{initQ} function
+      \item Mark the starting vertex for BFS as visited and enqueue it
+      \item Perform BFS and print the visited vertices
+    \end{enumerate}
+  \item End
+\end{enumerate}
+
+\textbf{Program:}
+\lstset{language=C, basicstyle=\small\ttfamily, breaklines=true, numbers=left, numberstyle=\tiny\color{gray}, frame=single}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <stdbool.h>
+
+#define max(a, b) (a > b)? a: b;
+#define min(a, b) (a < b)? a: b;
+
+struct Q{
+    int *a; // array
+    int cp; // size && capacity
+    int f, r; //front and rear
+};
+
+void initQ(struct Q* q){
+    q->a = NULL;
+    q->f = 0; q->r = -1;
+    q->cp = 0;
+}
+
+bool isEmpty(struct Q* q){
+    return (q->r - q->f + 1 == 0);
+} 
+
+void pushQ(struct Q* q, int x){
+    q->r++;
+    if(q->r - q->f + 1 > q->cp){
+        q->cp = max(1, q->cp << 1); 
+        int *p = (int*)malloc(sizeof(int)*q->cp);
+        int cnt = 0;
+        for(int i = q->f; i < q->r; i++){
+            p[cnt++] = q->a[i];
+        }
+        free(q->a);
+        q->a = p;
+        q->f = 0; q->r = cnt;
+    }
+    q->a[q->r] = x; 
+    return;
+}
+
+void popQ(struct Q* q){
+    if(q->r - q->f + 1 == 0){
+        return;
+    }
+    q->f++;
+    if(q->r - q->f + 1 <= (q->cp >> 1)){
+        q->cp >>= 1;
+        int *p = (int*) malloc(sizeof(int)*q->cp);
+        int cnt = 0;
+        for(int i = q->f; i <= q->r; i++){
+            p[cnt++] = q->a[i];
+        }
+        free(q->a);
+        q->a = p;
+        q->f = 0; q->r = cnt - 1;  
+    }
+    return;
+}
+
+int adjMatrix[10][10];
+int adjList[10];
+
+void dfs(int v, int visited[], int vert) {
+    visited[v] = 1;
+    printf("%d ", v);
+    for(int i = 0; i < vert; i++) {
+        if(adjMatrix[v][i] == 1 && visited[i] == 0) {
+            dfs(i, visited, vert);
+        }
+    }
+}
+
+int main() {
+    for(int i = 0; i < 10; i++) {
+        for(int j = 0; j < 10; j++) {
+            adjMatrix[i][j] = 0;
+        }
+    }
+
+    int vert, edg;
+    printf("enter number of vertices: ");
+    scanf("%d", &vert);
+    printf("enter number of edges: ");
+    scanf("%d", &edg);
+
+    printf("enter each edge (src dest):\n");
+    for(int i = 0; i < edg; i++) {
+        int x, y;
+        scanf("%d %d", &x, &y);
+        adjMatrix[x][y] = 1;
+        adjMatrix[y][x] = 1;
+    }
+
+    for(int i = 0; i < vert; i++) {
+        for(int j = 0; j < vert; j++) {
+            printf("%d ", adjMatrix[i][j]);
+        }
+        printf("\n");
+    }
+
+    for(int i = 0; i < vert; i++) {
+        printf("%d -> ", i);
+        for(int j = 0; j < vert; j++) {
+            if(adjMatrix[i][j] == 1) {
+                printf("%d ", j);
+            }
+        }
+        printf("\n");
+    }
+
+    int visited[vert];
+    for(int i = 0; i < vert; i++) {
+        visited[i] = 0;
+    }
+    printf("dfs:\n");
+    printf("staring from 0\n");
+    dfs(0, visited, vert);
+
+    for(int i = 0; i < vert; i++) {
+        visited[i] = 0;
+    }
+
+    struct Q q;
+    initQ(&q);
+
+    printf("\nbfs:\n");
+    //bfs
+    //starting from 0
+    pushQ(&q, 0);
+    visited[0] = 1;
+    while(!isEmpty(&q)) {
+        int v = q.a[q.f];
+        popQ(&q);
+        printf("%d ", v);
+        for(int i = 0; i < vert; i++) {
+            if(adjMatrix[v][i] == 1 && visited[i] == 0) {
+                pushQ(&q, i);
+                visited[i] = 1;
+            }
+        }
+    }
+
+    return 0;
+}
+\end{lstlisting}
+
+\textbf{Sample Input and Output:}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.25\linewidth]{exp7.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+\\
+\textbf{Result:} Implemented a C program to represent a graph and perform operations such as computing adjacency list and matrix, depth-first search, and breadth-first search.
+
+\clearpage
+\fancyhead[R]{13-12-23}
+\section{Experiment 8: Sorting}
+\textbf{Aim:} Develop a menu-driven C program to read numerical data from a file and implement sorting algorithms, including Insertion Sort, Selection Sort, Heap Sort, Merge Sort, and Quick Sort.
+\\
+\textbf{Algorithm:}
+\subsection*{1. Start}
+
+\subsection*{2. Define Sorting Algorithms}
+
+\subsubsection*{2.1 Insertion Sort (\texttt{insertionSort(arr, n)})}
+\begin{itemize}
+  \item \textbf{Algorithm:}
+    \begin{itemize}
+      \item Iterate through the array.
+      \item Insert each element into its correct position by shifting elements greater than the current element to the right.
+    \end{itemize}
+  \item \textbf{Pseudocode:}
+    \begin{verbatim}
+    for i = 1 to n-1:
+        key = arr[i]
+        j = i - 1
+        while j >= 0 and arr[j] > key:
+            arr[j + 1] = arr[j]
+            j = j - 1
+        arr[j + 1] = key
+    \end{verbatim}
+\end{itemize}
+
+\subsubsection*{2.2 Selection Sort (\texttt{selectionSort(arr, n)})}
+\begin{itemize}
+  \item \textbf{Algorithm:}
+    \begin{itemize}
+      \item Find the minimum element in the unsorted part of the array.
+      \item Swap it with the first unsorted element.
+      \item Repeat for the remaining unsorted elements.
+    \end{itemize}
+  \item \textbf{Pseudocode:}
+    \begin{verbatim}
+    for i = 0 to n-2:
+        min_idx = i
+        for j = i+1 to n-1:
+            if arr[j] < arr[min_idx]:
+                min_idx = j
+        swap(arr[min_idx], arr[i])
+    \end{verbatim}
+\end{itemize}
+
+\subsubsection*{2.3 Heapify (\texttt{heapify(arr, n, i)})}
+\begin{itemize}
+  \item \textbf{Algorithm:}
+    \begin{itemize}
+      \item Ensure the subtree rooted at node \texttt{i} follows the max-heap property.
+      \item Recursively apply heapify to the affected subtree.
+    \end{itemize}
+  \item \textbf{Pseudocode:}
+    \begin{verbatim}
+    largest = i
+    l = 2*i + 1
+    r = 2*i + 2
+    
+    if l < n and arr[l] > arr[largest]:
+        largest = l
+    
+    if r < n and arr[r] > arr[largest]:
+        largest = r
+    
+    if largest != i:
+        swap(arr[i], arr[largest])
+        heapify(arr, n, largest)
+    \end{verbatim}
+\end{itemize}
+
+\subsubsection*{2.4 Heap Sort (\texttt{heapSort(arr, n)})}
+\begin{itemize}
+  \item \textbf{Algorithm:}
+    \begin{itemize}
+      \item Build a max-heap from the array.
+      \item Repeatedly extract the maximum element from the heap to get a sorted array.
+    \end{itemize}
+  \item \textbf{Pseudocode:}
+    \begin{verbatim}
+    for i = n/2 - 1 to 0:
+        heapify(arr, n, i)
+    
+    for i = n-1 to 1:
+        swap(arr[0], arr[i])
+        heapify(arr, i, 0)
+    \end{verbatim}
+\end{itemize}
+
+\subsubsection*{2.5 Merge (\texttt{merge(arr, low, mid, high)})}
+\begin{itemize}
+  \item \textbf{Algorithm:}
+    \begin{itemize}
+      \item Merge two sorted halves of the array into a single sorted array.
+    \end{itemize}
+  \item \textbf{Pseudocode:}
+    \begin{verbatim}
+    n1 = mid - low + 1
+    n2 = high - mid
+    
+    L[1..n1], R[1..n2]
+    
+    for i = 0 to n1-1:
+        L[i] = arr[low + i]
+    for j = 0 to n2-1:
+        R[j] = arr[mid + 1 + j]
+    
+    i = 0
+    j = 0
+    k = low
+    
+    while i < n1 and j < n2:
+        if L[i] <= R[j]:
+            arr[k] = L[i]
+            i = i + 1
+        else:
+            arr[k] = R[j]
+            j = j + 1
+        k = k + 1
+    
+    while i < n1:
+        arr[k] = L[i]
+        i = i + 1
+        k = k + 1
+    
+    while j < n2:
+        arr[k] = R[j]
+        j = j + 1
+        k = k + 1
+    \end{verbatim}
+\end{itemize}
+
+\subsubsection*{2.6 Merge Sort (\texttt{mergeSort(arr, low, high)})}
+\begin{itemize}
+  \item \textbf{Algorithm:}
+    \begin{itemize}
+      \item Divide the array into halves, recursively sort them, and then merge.
+    \end{itemize}
+  \item \textbf{Pseudocode:}
+    \begin{verbatim}
+    if low < high:
+        mid = low + (high - low) / 2
+    
+        mergeSort(arr, low, mid)
+        mergeSort(arr, mid + 1, high)
+    
+        merge(arr, low, mid, high)
+    \end{verbatim}
+\end{itemize}
+
+\subsubsection*{2.7 Partition (\texttt{partition(arr, low, high)})}
+\begin{itemize}
+  \item \textbf{Algorithm:}
+    \begin{itemize}
+      \item Choose a pivot and partition the array into elements less than and greater than the pivot.
+    \end{itemize}
+  \item \textbf{Pseudocode:}
+    \begin{verbatim}
+    pivot = arr[high]
+    i = low - 1
+    
+    for j = low to high-1:
+        if arr[j] < pivot:
+            i = i + 1
+            swap(arr[i], arr[j])
+    
+    swap(arr[i + 1], arr[high])
+    return i + 1
+    \end{verbatim}
+\end{itemize}
+
+\subsubsection*{2.8 Quick Sort (\texttt{quickSort(arr, low, high)})}
+\begin{itemize}
+  \item \textbf{Algorithm:}
+    \begin{itemize}
+      \item Choose a pivot, partition the array, and recursively sort the subarrays.
+    \end{itemize}
+  \item \textbf{Pseudocode:}
+    \begin{verbatim}
+    if low < high:
+        pi = partition(arr, low, high)
+    
+        quickSort(arr, low, pi - 1)
+        quickSort(arr, pi + 1, high)
+    \end{verbatim}
+\end{itemize}
+
+\subsection*{3. Main Program}
+
+\subsubsection*{3.1 Open File and Read Numbers}
+\begin{itemize}
+  \item Open the file \texttt{numbers.txt} for reading.
+  \item Read 10 integers from the file into the array \texttt{numbers}.
+  \item Close the file.
+\end{itemize}
+
+\subsubsection*{3.2 Display Original Array}
+\begin{itemize}
+  \item Display the original array for reference.
+\end{itemize}
+
+\subsubsection*{3.3 Display Sorting Algorithm Menu}
+\begin{itemize}
+  \item Display a menu for sorting algorithms.
+\end{itemize}
+
+\subsubsection*{3.4 Input User's Choice}
+\begin{itemize}
+  \item Input the user's choice (\texttt{choice}).
+\end{itemize}
+
+\subsubsection*{3.5 Perform Selected Sorting Algorithm}
+\begin{itemize}
+  \item Use a \texttt{switch} statement to perform the selected sorting algorithm.
+\end{itemize}
+
+\subsubsection*{3.6 Display Sorted Array}
+\begin{itemize}
+  \item Display the sorted array for comparison.
+\end{itemize}
+
+\subsection*{4. End}
+
+\textbf{Program:}
+\lstset{language=C, basicstyle=\small\ttfamily, breaklines=true, numbers=left, numberstyle=\tiny\color{gray}, frame=single}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+
+void insertionSort(int arr[], int n) {
+    int i, key, j;
+    for (i = 1; i < n; i++) {
+        key = arr[i];
+        j = i - 1;
+
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j = j - 1;
+        }
+        arr[j + 1] = key;
+    }
+}
+
+void selectionSort(int arr[], int n) {
+    int i, j, min_idx;
+    for (i = 0; i < n - 1; i++) {
+        min_idx = i;
+        for (j = i + 1; j < n; j++) {
+            if (arr[j] < arr[min_idx]) {
+                min_idx = j;
+            }
+        }
+        int temp = arr[min_idx];
+        arr[min_idx] = arr[i];
+        arr[i] = temp;
+    }
+}
+
+void heapify(int arr[], int n, int i) {
+    int largest = i;
+    int l = 2 * i + 1;
+    int r = 2 * i + 2;
+
+    if (l < n && arr[l] > arr[largest]) {
+        largest = l;
+    }
+
+    if (r < n && arr[r] > arr[largest]) {
+        largest = r;
+    }
+
+    if (largest != i) {
+        int temp = arr[i];
+        arr[i] = arr[largest];
+        arr[largest] = temp;
+
+        heapify(arr, n, largest);
+    }
+}
+
+void heapSort(int arr[], int n) {
+    for (int i = n / 2 - 1; i >= 0; i--) {
+        heapify(arr, n, i);
+    }
+
+    for (int i = n - 1; i > 0; i--) {
+        int temp = arr[0];
+        arr[0] = arr[i];
+        arr[i] = temp;
+
+        heapify(arr, i, 0);
+    }
+}
+
+void merge(int arr[], int low, int mid, int high) {
+    int n1 = mid - low + 1;
+    int n2 = high - mid;
+
+    int L[n1], R[n2];
+
+    for (int i = 0; i < n1; i++) {
+        L[i] = arr[low + i];
+    }
+    for (int j = 0; j < n2; j++) {
+        R[j] = arr[mid + 1 + j];
+    }
+
+    int i = 0;
+    int j = 0;
+    int k = low;
+
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) {
+            arr[k] = L[i];
+            i++;
+        } else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+}
+
+void mergeSort(int arr[], int low, int high) {
+    if (low < high) {
+        int mid = low + (high - low) / 2;
+
+        mergeSort(arr, low, mid);
+        mergeSort(arr, mid + 1, high);
+
+        merge(arr, low, mid, high);
+    }
+}
+
+int partition(int arr[], int low, int high) {
+    int pivot = arr[high];
+    int i = (low - 1);
+
+    for (int j = low; j <= high - 1; j++) {
+        if (arr[j] < pivot) {
+            i++;
+            int temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+    }
+    int temp = arr[i + 1];
+    arr[i + 1] = arr[high];
+    arr[high] = temp;
+
+    return (i + 1);
+}
+
+void quickSort(int arr[], int low, int high) {
+    if (low < high) {
+        int pi = partition(arr, low, high);
+
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}
+
+int main() {
+    FILE *file;
+    int numbers[10];
+    int i, choice;
+
+    file = fopen("numbers.txt", "r");
+    if (file == NULL) {
+        printf("Error opening file.\n");
+        return 1;
+    }
+
+    for (i = 0; i < 10; i++) {
+        fscanf(file, "%d", &numbers[i]);
+    }
+
+    fclose(file);
+
+    printf("Sorting Algorithms:\n");
+    printf("1. Insertion Sort\n");
+    printf("2. Selection Sort\n");
+    printf("3. Heap Sort\n");
+    printf("4. Merge Sort\n");
+    printf("5. Quick Sort\n");
+
+    printf("Enter your choice: ");
+    scanf("%d", &choice);
+
+    switch (choice) {
+        case 1:
+            insertionSort(numbers, 10);
+            printf("Sorted using Insertion Sort: ");
+            break;
+        case 2:
+            selectionSort(numbers, 10);
+            printf("Sorted using Selection Sort: ");
+            break;
+        case 3:
+            heapSort(numbers, 10);
+            printf("Sorted using Heap Sort: ");
+            break;
+        case 4:
+            mergeSort(numbers, 0, 9);
+            printf("Sorted using Merge Sort: ");
+            break;
+        case 5:
+            quickSort(numbers, 0, 9);
+            printf("Sorted using Quick Sort: ");
+            break;
+        default:
+            printf("Invalid choice.\n");
+            return 1;
+    }
+
+    for (i = 0; i < 10; i++) {
+        printf("%d ", numbers[i]);
+    }
+    printf("\n");
+
+    return 0;
+}
+\end{lstlisting}
+
+\textbf{Sample Input and Output:}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.25\linewidth]{exp8.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+\\
+\textbf{Result:} Developed a menu-driven C program to read numerical data from a file and implemented sorting algorithms, including Insertion Sort, Selection Sort, Heap Sort, Merge Sort, and Quick Sort.
+
+\clearpage
+\fancyhead[R]{13-12-23}
+\section{Experiment 9: Hash Table}
+\textbf{Aim:} Write a C program to implement a hash table using the chaining method and linear probing for collision resolution. Set the hash table size to 10 and perform operations like insertion, deletion, and searching.
+
+\textbf{Algorithm:}
+\section*{Hashing Program}
+
+\subsection*{1. Start}
+
+\subsection*{2. Define Hash Table Structure}
+
+\subsubsection*{2.1 Node Structure (\texttt{struct Node})}
+\begin{itemize}
+  \item \textbf{Attributes:}
+    \begin{itemize}
+      \item \texttt{key}: Integer representing the key.
+      \item \texttt{value}: Integer representing the associated value.
+      \item \texttt{next}: Pointer to the next node in case of collisions.
+    \end{itemize}
+  \item \textbf{Functions:}
+    \begin{itemize}
+      \item \texttt{createNode(key, value)}: Creates a new node with the given key and value.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{2.2 Hash Table (\texttt{hashTable[]})}
+\begin{itemize}
+  \item \textbf{Attributes:}
+    \begin{itemize}
+      \item \texttt{SIZE}: Constant representing the size of the hash table.
+      \item \texttt{hashTable[SIZE]}: Array of pointers to nodes, representing the hash table.
+    \end{itemize}
+  \item \textbf{Functions:}
+    \begin{itemize}
+      \item \texttt{insert(key, value)}: Inserts a key-value pair into the hash table using linked list for handling collisions.
+      \item \texttt{search(key)}: Searches for a key in the hash table and returns its associated value.
+      \item \texttt{display()}: Displays the contents of the hash table.
+      \item \texttt{hash(key)}: Hash function to determine the index in the hash table.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection*{2.3 Hash Table with Linear Probing (\texttt{hashTable1[]})}
+\begin{itemize}
+  \item \textbf{Attributes:}
+    \begin{itemize}
+      \item \texttt{SIZE}: Constant representing the size of the hash table.
+      \item \texttt{hashTable1[SIZE]}: Array representing the hash table using linear probing for handling collisions.
+    \end{itemize}
+  \item \textbf{Functions:}
+    \begin{itemize}
+      \item \texttt{insertHash(hashTable[], key)}: Inserts a key into the hash table using linear probing.
+      \item \texttt{displayHash(hashTable[])}: Displays the contents of the hash table with linear probing.
+    \end{itemize}
+\end{itemize}
+
+\subsection*{3. Main Program}
+
+\subsubsection*{3.1 Initialize Hash Tables}
+\begin{itemize}
+  \item Initialize \texttt{hashTable[]} and \texttt{hashTable1[]} with appropriate initial values.
+\end{itemize}
+
+\subsubsection*{3.2 Display Menu}
+\begin{itemize}
+  \item Display a menu for selecting the type of hashing (linked list or linear probing).
+\end{itemize}
+
+\subsubsection*{3.3 Input User's Choice}
+\begin{itemize}
+  \item Input the user's choice (\texttt{choice}).
+\end{itemize}
+
+\subsubsection*{3.4 Perform Selected Operation}
+\begin{itemize}
+  \item Use a \texttt{switch} statement to perform the selected operation.
+\end{itemize}
+
+\subsubsection*{3.5 Display Results}
+\begin{itemize}
+  \item Display the results after performing the chosen operation.
+\end{itemize}
+
+\subsection*{4. End}
+
+\textbf{Program:}
+\lstset{language=C, basicstyle=\small\ttfamily, breaklines=true, numbers=left, numberstyle=\tiny\color{gray}, frame=single}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+
+#define SIZE 10
+
+struct Node {
+    int key;
+    int value;
+    struct Node* next;
+};
+
+struct Node* hashTable[SIZE];
+
+struct Node* createNode(int key, int value) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->key = key;
+    newNode->value = value;
+    newNode->next = NULL;
+    return newNode;
+}
+
+void insert(int key, int value) {
+    int index = key % SIZE;
+
+    if (hashTable[index] == NULL) {
+        hashTable[index] = createNode(key, value);
+    } else {
+        struct Node* currentNode = hashTable[index];
+        while (currentNode->next != NULL) {
+            currentNode = currentNode->next;
+        }
+        currentNode->next = createNode(key, value);
+    }
+}
+
+int search(int key) {
+    int index = key % SIZE;
+
+    if (hashTable[index] == NULL) {
+        return -1;
+    } else {
+        struct Node* currentNode = hashTable[index];
+        while (currentNode != NULL) {
+            if (currentNode->key == key) {
+                return currentNode->value;
+            }
+            currentNode = currentNode->next;
+        }
+        return -1;
+    }
+}
+
+void display() {
+    for (int i = 0; i < SIZE; i++) {
+        printf("Index %d: ", i);
+        struct Node* currentNode = hashTable[i];
+        while (currentNode != NULL) {
+            printf("(%d, %d) ", currentNode->key, currentNode->value);
+            currentNode = currentNode->next;
+        }
+        printf("\n");
+    }
+}
+
+int hash(int key) {
+    return key % SIZE;
+}
+
+void insertHash(int hashTable[], int key) {
+    int index = hash(key);
+    while (hashTable[index] != -1) {
+        index = (index + 1) % SIZE;
+    }
+    hashTable[index] = key;
+}
+
+void displayHash(int hashTable[]) {
+    printf("Hash Table:\n");
+    for (int i = 0; i < SIZE; i++) {
+        printf("%d: %d\n", i, hashTable[i]);
+    }
+}
+
+int main() {
+    int choice;
+    int key, value;
+    int hashTable1[SIZE];
+    for (int i = 0; i < SIZE; i++) {
+        hashTable[i] = NULL;
+        hashTable1[i] = -1;
+    }
+
+    printf("Menu:\n");
+    printf("1. Insert and display using linked list\n");
+    printf("2. Insert and display using linear probing\n");
+    printf("Enter your choice: ");
+    scanf("%d", &choice);
+
+    if (choice == 1) {
+        insert(1, 10);
+        insert(11, 20);
+        insert(21, 30);
+        insert(2, 40);
+        insert(12, 50);
+        display();
+
+        int key = 11;
+        int value = search(key);
+        if (value != -1) {
+            printf("Value for key %d: %d\n", key, value);
+        } 
+        else {
+            printf("Key %d not found\n", key);
+        }
+    } else if (choice == 2) {
+        insertHash(hashTable1, 5);
+        insertHash(hashTable1, 15);
+        insertHash(hashTable1, 25);
+        insertHash(hashTable1, 35);
+        displayHash(hashTable1);
+    } else {
+        printf("Invalid choice.\n");
+    }
+
+    return 0;
+}
+\end{lstlisting}
+
+\textbf{Sample Input and Output:}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.25\linewidth]{chaining.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+\\
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.25\linewidth]{linearprobing.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+\\
+\textbf{Result:} Implemented a C program to create a hash table using chaining and linear probing methods. The hash table size was set to 10, and operations include insertion and collision resolution.
+
+\clearpage
+\fancyhead[R]{13-12-23}
+\section{Experiment 10: Basic Memory Allocator and Deallocator}
+\textbf{Aim:} Implement a C program to simulate a basic memory allocator and garbage collector using a doubly linked list. Perform operations related to memory allocation and deallocation.
+
+\textbf{Algorithm:}
+\subsection*{1. Start}
+
+\subsection*{2. Define Memory Node Structure (\texttt{struct Node})}
+
+\begin{itemize}
+  \item \textbf{Attributes:}
+    \begin{itemize}
+      \item \texttt{size}: Integer representing the size of the memory block.
+      \item \texttt{isAllocated}: Integer (0 or 1) indicating whether the memory block is allocated.
+      \item \texttt{prev}: Pointer to the previous memory block.
+      \item \texttt{next}: Pointer to the next memory block.
+    \end{itemize}
+\end{itemize}
+
+\subsection*{3. Initialize Memory (\texttt{initialize(int size)})}
+
+\begin{itemize}
+  \item Allocate memory for the head node using \texttt{malloc}.
+  \item Set initial size, allocated status, and pointers.
+\end{itemize}
+
+\subsection*{4. Allocate Memory (\texttt{void* allocate(int size)})}
+
+\begin{itemize}
+  \item Iterate through memory blocks to find the best-fit block.
+  \item If a block is found:
+    \begin{itemize}
+      \item If the block is larger than needed, split it into two blocks.
+      \item Allocate the required size in the selected block.
+      \item Return a pointer to the allocated memory.
+    \end{itemize}
+  \item If no suitable block is found, return \texttt{NULL}.
+\end{itemize}
+
+\subsection*{5. Deallocate Memory (\texttt{deallocate(void* ptr)})}
+
+\begin{itemize}
+  \item Check if the pointer is \texttt{NULL}.
+  \item Mark the memory block as deallocated.
+  \item Merge adjacent free blocks.
+  \item Free the block if it is the last block.
+\end{itemize}
+
+\subsection*{6. Print Memory Status (\texttt{printMemory()})}
+
+\begin{itemize}
+  \item Iterate through memory blocks and print their size and allocation status.
+\end{itemize}
+
+\subsection*{7. Main Program (\texttt{main()})}
+
+\begin{itemize}
+  \item Initialize memory with a specified size (e.g., 1024).
+  \item Allocate and deallocate memory blocks using \texttt{allocate()} and \texttt{deallocate()}.
+  \item Print memory status before and after allocation/deallocation.
+\end{itemize}
+
+\subsection*{8. End}
+
+
+\textbf{Program:}
+\lstset{language=C, basicstyle=\small\ttfamily, breaklines=true, numbers=left, numberstyle=\tiny\color{gray}, frame=single}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+
+//best fit
+
+typedef struct Node {
+    int size;
+    int isAllocated;
+    struct Node* prev;
+    struct Node* next;
+} Node;
+
+Node* head = NULL;
+
+void initialize(int size) {
+    head = (Node*)malloc(sizeof(Node));
+    head->size = size;
+    head->isAllocated = 0;
+    head->prev = NULL;
+    head->next = NULL;
+}
+
+void* allocate(int size) {
+    Node* current = head;
+    while (current != NULL) {
+        if (!current->isAllocated && current->size >= size) {
+            if (current->size > size) {
+                Node* newNode = (Node*)malloc(sizeof(Node));
+                newNode->size = current->size - size;
+                newNode->isAllocated = 0;
+                newNode->prev = current;
+                newNode->next = current->next;
+                if (current->next != NULL) {
+                    current->next->prev = newNode;
+                }
+                current->size = size;
+                current->isAllocated = 1;
+                current->next = newNode;
+            } else {
+                current->isAllocated = 1;
+            }
+            return (void*)(current + 1);
+        }
+        current = current->next;
+    }
+    return NULL;
+}
+
+void deallocate(void* ptr) {
+    if (ptr == NULL) {
+        return;
+    }
+    Node* current = (Node*)ptr - 1;
+    current->isAllocated = 0;
+    if (current->next != NULL && !current->next->isAllocated) {
+        current->size += current->next->size;
+        current->next = current->next->next;
+        if (current->next != NULL) {
+            current->next->prev = current;
+        }
+    }
+    if (current->prev != NULL && !current->prev->isAllocated) {
+        current->prev->size += current->size;
+        current->prev->next = current->next;
+        if (current->next != NULL) {
+            current->next->prev = current->prev;
+        }
+        current = current->prev;
+    }
+    if (current->next == NULL) {
+        free(current);
+    }
+}
+
+void printMemory() {
+    Node* current = head;
+    while (current != NULL) {
+        printf("Size: %d, Allocated: %s\n", current->size, current->isAllocated ? "Yes" : "No");
+        current = current->next;
+    }
+}
+
+int main() {
+    initialize(1024);
+    
+    void* ptr1 = allocate(256);
+    void* ptr2 = allocate(512);
+    void* ptr3 = allocate(128);
+    
+    printf("After allocation:\n");
+    printMemory();
+    
+    deallocate(ptr2);
+    
+    printf("After deallocation:\n");
+    printMemory();
+    
+    return 0;
+}
+\end{lstlisting}
+
+\textbf{Sample Input and Output:}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.25\linewidth]{exp10.png}
+    \caption{Enter Caption}
+    \label{fig:enter-label}
+\end{figure}
+
+\textbf{Result:} Created a C program to simulate a basic memory allocator and garbage collector using a doubly linked list. The program handles memory allocation and deallocation operations.
+
+\end{document}

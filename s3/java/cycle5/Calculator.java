@@ -20,9 +20,9 @@ public class Calculator extends JFrame implements ActionListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        calculationLabel = new JLabel(); // Initialize calculation label
-        calculationLabel.setHorizontalAlignment(JLabel.RIGHT); // Align calculation text to the right
-        calculationLabel.setPreferredSize(new Dimension(240, 30)); // Set preferred size for the label
+        calculationLabel = new JLabel();
+        calculationLabel.setHorizontalAlignment(JLabel.RIGHT); 
+        calculationLabel.setPreferredSize(new Dimension(240, 30)); 
 
         textField = new JTextField();
         textField.setBounds(30, 70, 240, 30);
@@ -63,7 +63,7 @@ public class Calculator extends JFrame implements ActionListener {
         panel.add(clearButton);
         panel.add(divideButton);
 
-        add(calculationLabel); // Add calculation label to the frame
+        add(calculationLabel); 
         add(textField);
         add(panel);
 
