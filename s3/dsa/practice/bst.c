@@ -1,11 +1,3 @@
-//check if node is leaf
-        //else check if node only has left subtree and if yes reconnect the parent to left child of node
-        //else check if node only has right subtree and if yes reconnect the parent to right child of node
-        //find inorder successor
-        //if inorder successor is a leaf then swap and delete it
-        //if inorder successor is not a leaf (ie the right child of node doesnt have a left child) reconnect the connect the left subtree of node as left subtree of its right child and reconnect it to its parent
-        
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
@@ -26,7 +18,7 @@ void deleteUsingInorderSuccessor(Node* node, Node* parent, int x);
 void visit(Node* node);
 void inorder(Node* node);
 
-Node* ROOT = NULL;
+Node* ROOT = NULL; //root of tree (global)
 
 int main() {
     insert(ROOT, NULL, 1);
@@ -58,14 +50,14 @@ int main() {
 }
 
 Node* getNode() {
-    Node* node = (Node*)malloc(sizeof(Node));
-    node->left = NULL;
-    node->right = NULL;
-    return node;
+    Node* node = (Node*)malloc(sizeof(Node)); //allocate memory
+    node->left = NULL; //initialize left
+    node->right = NULL; //initialize right
+    return node; //return node
 }
 
 void insert(Node* node, Node* parent, int x) {
-    if(node == NULL) {
+    if(node == NULL) { //not found
         Node* newnode = getNode();
         newnode->x = x;
         if(parent != NULL) {
@@ -74,99 +66,102 @@ void insert(Node* node, Node* parent, int x) {
         }
         else ROOT = newnode;
     }
-    else if(x == node->x) {
-        printf("value exists\n");
+    else if(x == node->x) { //found
+        printf("%d already exists\n", x);
     }
-    else if(x < node->x) {
+    else if(x < node->x) { //search left
         insert(node->left , node, x);
     }
-    else {
+    else { //search right
         insert(node->right, node, x);
     }
     return;
 }
 
 void delete(Node* node, Node* parent, int x) {
-    if(node == NULL) {
+    if(node == NULL) { //not found
         printf("value not found\n");
         return;
     }
-    else if(x == node->x) {
-        if(node->left == NULL && node->right == NULL) {
-            if(parent != NULL) {
+    else if(x == node->x) { //found
+        if(node->left == NULL && node->right == NULL) { //no child
+            if(parent != NULL) { //node is not root
                 if(x < parent->x) parent->left = NULL;
                 else parent->right = NULL;
             }
-            else {
-                free(ROOT);
-                ROOT = NULL;
+            else { //node is root
+                free(ROOT); //free root
+                ROOT = NULL; //set root to NULL
             }
         }
-        else if(node->right == NULL) {
-            if(parent != NULL) {
-                if(x < parent->x) parent->left = node->left;
-                else parent->right = node->left;
+        else if(node->right == NULL) { //only left subtree
+            if(parent != NULL) { //node is not root
+                if(x < parent->x) parent->left = node->left; //connect left of parent to left of node
+                else parent->right = node->left; //connect right of parent to left of node
                 free(node);
             }
-            else {
+            else { //node is root
                 Node* delNode = ROOT;
-                ROOT = ROOT->left;
-                free(delNode);
+                ROOT = ROOT->left; //connect root to left of node
+                free(delNode); //free root
             }
             return;
         }
-        else if(node->left == NULL) {
-            if(parent != NULL) {
-                if(x < parent->x) parent->left = node->right;
-                else parent->right = node->right;
+        else if(node->left == NULL) { //only right subtree
+            if(parent != NULL) { //node is not root
+                if(x < parent->x) parent->left = node->right; //connect left of parent to right of node
+                else parent->right = node->right; //connect right of parent to right of node
                 free(node);
             }
-            else {
+            else { //node is root
                 Node* delNode = ROOT;
-                ROOT = ROOT->right;
-                free(delNode);
+                ROOT = ROOT->right; //connect root to right of node
+                free(delNode); //free root
             }
         }
-        else deleteUsingInorderSuccessor(node, parent, x);
+        else deleteUsingInorderSuccessor(node, parent, x); //has both subtrees
     }
-    else if(x < node->x) delete(node->left, node, x);
-    else delete(node->right, node, x);
+    else if(x < node->x) delete(node->left, node, x); //search left
+    else delete(node->right, node, x); //search right
     return;
 }
 
 void deleteUsingInorderSuccessor(Node* node, Node* parent, int x) {
-    Node* rover = node;
-    Node* roverParent = parent;
+    Node* rover = node; //inorder successor
+    Node* roverParent = parent; //parent of inorder successor
 
     rover = rover->right;
-    while(rover->left != NULL) {
+    while(rover->left != NULL) { //find inorder successor
         roverParent = rover;
         rover = rover->left;
     }
-    rover->left = node->left;
-    if(parent != NULL) { 
-        if(x < parent->x) parent->left = node->right;
-        else parent->right = node->right;
+
+    rover->left = node->left; //connect left subtree of node to left of inorder successor
+                              //
+    if(parent != NULL) {//node is not root 
+        if(x < parent->x) parent->left = node->right; //connect left of parent to right of node
+        else parent->right = node->right; //connect right of parent to right of node
         free(node);
     }
-    else {
+    else { //node is root
         Node* delNode = ROOT;
-        ROOT = ROOT->right;
-        free(delNode);
+        ROOT = ROOT->right; //connect root to right of node
+        free(delNode); //free root
     }
+
     return;
 }
 
 void inorder(Node* node) {
     if(node == NULL) return;
 
-    inorder(node->left);
-    visit(node);
-    inorder(node->right);
+    inorder(node->left); //search left
+    visit(node); //visit
+    inorder(node->right); //search right
     return;
 }
 
-void visit(Node* node) {
+void visit(Node* node) { //print node
     printf("%d  ", node->x);
     return;
 }
