@@ -11,6 +11,7 @@ struct Node {
 
 typedef struct Node Node;
 
+//function prototypes
 Node* getNode();
 void insert(Node* node, Node* parent, int x);
 void delete(Node* node, Node* parent, int x);
@@ -21,6 +22,8 @@ void inorder(Node* node);
 Node* ROOT = NULL; //root of tree (global)
 
 int main() {
+    //a sequence of insertions and deletions
+
     insert(ROOT, NULL, 1);
     insert(ROOT, NULL, 2);
     insert(ROOT, NULL, 0);
@@ -57,34 +60,34 @@ Node* getNode() {
 }
 
 void insert(Node* node, Node* parent, int x) {
-    if(node == NULL) { //not found
+    if(node == NULL) { //not found : case 1/4
         Node* newnode = getNode();
         newnode->x = x;
-        if(parent != NULL) {
-            if(x < parent->x) parent->left = newnode;
-            else parent->right = newnode;
+        if(parent != NULL) { //node is not root
+            if(x < parent->x) parent->left = newnode; //connect left of parent to newnode
+            else parent->right = newnode; //connect right of parent to newnode
         }
-        else ROOT = newnode;
+        else ROOT = newnode; //set root to newnode
     }
-    else if(x == node->x) { //found
-        printf("%d already exists\n", x);
+    else if(x == node->x) { //found : case 2/4
+        printf("%d already exists\n", x); 
     }
-    else if(x < node->x) { //search left
+    else if(x < node->x) { //search left : case 3/4
         insert(node->left , node, x);
     }
-    else { //search right
+    else { //search right : case 4/4
         insert(node->right, node, x);
     }
     return;
 }
 
 void delete(Node* node, Node* parent, int x) {
-    if(node == NULL) { //not found
+    if(node == NULL) { //not found : case 1/4
         printf("value not found\n");
         return;
     }
-    else if(x == node->x) { //found
-        if(node->left == NULL && node->right == NULL) { //no child
+    else if(x == node->x) { //found : case 2/4
+        if(node->left == NULL && node->right == NULL) { //no child : case 1/4
             if(parent != NULL) { //node is not root
                 if(x < parent->x) parent->left = NULL;
                 else parent->right = NULL;
@@ -94,7 +97,7 @@ void delete(Node* node, Node* parent, int x) {
                 ROOT = NULL; //set root to NULL
             }
         }
-        else if(node->right == NULL) { //only left subtree
+        else if(node->right == NULL) { //only left subtree : case 2/4
             if(parent != NULL) { //node is not root
                 if(x < parent->x) parent->left = node->left; //connect left of parent to left of node
                 else parent->right = node->left; //connect right of parent to left of node
@@ -107,22 +110,27 @@ void delete(Node* node, Node* parent, int x) {
             }
             return;
         }
-        else if(node->left == NULL) { //only right subtree
+        else if(node->left == NULL) { //only right subtree : case 3/4
             if(parent != NULL) { //node is not root
                 if(x < parent->x) parent->left = node->right; //connect left of parent to right of node
                 else parent->right = node->right; //connect right of parent to right of node
                 free(node);
             }
-            else { //node is root
+            else { //node is root 
                 Node* delNode = ROOT;
                 ROOT = ROOT->right; //connect root to right of node
                 free(delNode); //free root
             }
         }
-        else deleteUsingInorderSuccessor(node, parent, x); //has both subtrees
+        else deleteUsingInorderSuccessor(node, parent, x); //has both subtrees : case 4/4
     }
-    else if(x < node->x) delete(node->left, node, x); //search left
-    else delete(node->right, node, x); //search right
+    else if(x < node->x) { //search left : case 3/4
+        delete(node->left, node, x); 
+    }
+    else { //search right : case 4/4
+        delete(node->right, node, x);
+    }
+
     return;
 }
 
