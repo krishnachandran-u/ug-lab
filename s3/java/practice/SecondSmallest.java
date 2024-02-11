@@ -41,7 +41,13 @@ class SecondSmallest {
             if(arrayList.get(i) > min && arrayList.get(i) < secondMin) secondMin = arrayList.get(i);
         }
 
-        System.out.println("Second smallest element: " + secondMin);
+        if(secondMin == Integer.MAX_VALUE) {
+            System.out.println("Second smallest element not found");
+        }
+        else {
+            System.out.println("Second smallest element: " + secondMin);
+        }
+
         return;
     }
 }
