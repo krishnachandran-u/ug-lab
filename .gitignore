@@ -32,3 +32,6 @@ logs/*
 assets/*.jpg
 
 *.exe
+
+*.odt
+
