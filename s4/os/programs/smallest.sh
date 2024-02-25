@@ -2,13 +2,13 @@ echo "Enter three numbers"
 read a
 read b
 read c
-if [ $a -gt $b ] && [ $a -gt $c ] 
+if [ $a -lt $b ] && [ $a -lt $c ] 
 then 
-	echo $a
-elif [ $b -gt $a ] && [ $b -gt $c ] 
+    echo $a
+elif [ $b -lt $a ] && [ $b -lt $c ] 
 then 
-	echo $b
+    echo $b
 else 
-	echo $c 
+    echo $c 
 fi
 
