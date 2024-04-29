@@ -14,7 +14,7 @@ typedef struct queue queue;
 
 //process
 struct proc_t {
-    int pid, at, bt, ct, tat, wt, rt; 
+    int pid, at, bt, ct, tat, wt, rt, p; 
 };
 
 //queue
@@ -142,17 +142,67 @@ void run_rr(proc_t* procs, int n, int tq) {
     return;
 }
 
+void run_sjf(proc_t* procs, int n) {
+    int elap = 0;
+    int fin = 0;
+    int t_tat = 0, t_wt = 0;
+    while(fin < n) {
+        int min_bt = INT_MAX;
+        int min_i = -1;
+
+        for(int i = 0; i < n; i++) {
+            if(procs[i].rt > 0 && procs[i].bt < min_bt && procs[i].at <= elap) {
+                min_bt = procs[i].bt;
+                min_i = i;
+            }
+        }
+
+        if(min_i == -1) {
+            for(int i = 0; i < n; i++) {
+                if(procs[i].rt > 0 && procs[i].at > elap) {
+                    elap = procs[i].at;
+                    print_gantt(-1, elap);
+                    break;
+                }
+            }
+        }
+        else {
+            elap += procs[min_i].bt;
+            procs[min_i].rt = 0;
+            procs[min_i].ct = elap;
+            procs[min_i].tat = procs[min_i].ct - procs[min_i].at;
+            procs[min_i].wt = procs[min_i].tat - procs[min_i].bt;
+            t_tat += procs[min_i].tat;
+            t_wt += procs[min_i].wt;
+            print_gantt(min_i, elap);
+            fin++;
+        }
+    }
+    print_stat(procs, n);   
+    printf("avg tat: %f", 1.0*t_tat/n);
+    printf("avg wq: %f", 1.0*t_wt/n);
+    printf("\n");
+}
+
 proc_t* set_procs(int n) {
     proc_t* procs = (proc_t*)malloc(n*sizeof(proc_t));
 
     for(int i = 0; i < n; i++) {
         procs[i].pid = i;
-        printf("Enter at and bt of process %d: ", procs[i].pid);
-        scanf("%d%d", &procs[i].at, &procs[i].bt);
+        printf("Enter at and bt and p of process %d: ", procs[i].pid);
+        scanf("%d%d%d", &procs[i].at, &procs[i].bt, &procs[i].p);
         procs[i].rt = procs[i].bt;
         procs[i].tat = procs[i].wt = 0;
     }
     return procs;
+}
+
+proc_t* get_copy(proc_t* procs, int n) {
+    proc_t* copy = (proc_t*)malloc(n*sizeof(proc_t));
+    for(int i = 0; i < n; i++) {
+        copy[i] = procs[i];
+    }
+    return copy;
 }
 
 int main() {
@@ -162,7 +212,13 @@ int main() {
 
     proc_t* procs = set_procs(n);
     
-    run_rr(procs, n, TQ);
+    printf("\nround_robin\n");
+    run_rr(get_copy(procs, n), n, TQ);
+    printf("\n");
+
+    printf("\nsjf\n");
+    run_sjf(get_copy(procs, n), n);
+    printf("\n");
 
     return 0;
 }
