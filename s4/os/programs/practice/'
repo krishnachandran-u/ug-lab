@@ -194,7 +194,6 @@ void run_fcfs(proc_t* procs, int n) {
         }
 
         elap += procs[i].bt;
-        procs[i].rt = 0;
         procs[i].ct = elap;
         procs[i].tat = procs[i].ct - procs[i].at;
         procs[i].wt = procs[i].tat - procs[i].bt;
@@ -202,51 +201,6 @@ void run_fcfs(proc_t* procs, int n) {
         t_wt += procs[i].wt;
         print_gantt(i, elap);
     }
-    print_stat(procs, n);   
-    printf("avg tat: %f", 1.0*t_tat/n);
-    printf("avg wq: %f", 1.0*t_wt/n);
-    printf("\n");
-    return;
-}
-
-void run_priority(proc_t* procs, int n) {
-    int elap = 0;
-    int fin = 0;
-
-    int t_tat = 0, t_wt = 0;
-    while(fin < n) {
-        int minv = INT_MAX;
-        int minv_j = -1;
-        for(int j = 0; j < n; j++) {
-            if(procs[j].rt > 0 && procs[j].p < minv && procs[j].at <= elap) {
-                minv = procs[j].p;
-                minv_j = j;
-            }
-        }
-
-        if(minv_j == -1) {
-            int min_at = INT_MAX;
-            for(int j = 0; j < n; j++) {
-                if(procs[j].rt > 0 && procs[j].at < min_at) {
-                    min_at = procs[j].at;
-                }
-            }
-            elap = min_at;
-            print_gantt(-1, elap);
-        }
-        else {
-            elap += procs[minv_j].bt;
-            procs[minv_j].rt = 0;
-            procs[minv_j].ct = elap;
-            procs[minv_j].tat = procs[minv_j].ct - procs[minv_j].at;
-            procs[minv_j].wt = procs[minv_j].tat - procs[minv_j].bt;
-            t_tat += procs[minv_j].tat;
-            t_wt += procs[minv_j].wt;
-            print_gantt(minv_j, elap);
-            fin++;
-        }
-    }
-
     print_stat(procs, n);   
     printf("avg tat: %f", 1.0*t_tat/n);
     printf("avg wq: %f", 1.0*t_wt/n);
@@ -292,10 +246,6 @@ int main() {
 
     printf("\nfcfs\n");
     run_fcfs(get_copy(procs, n), n);
-    printf("\n");
-
-    printf("\npriority\n");
-    run_priority(get_copy(procs, n), n);
     printf("\n");
 
     return 0;
