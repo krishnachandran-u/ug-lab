@@ -7,7 +7,7 @@
 #include <string.h>
 
 #define CAP 1000
-#define TQ 5
+#define TQ 2
 
 typedef struct proc_t proc_t;
 typedef struct queue queue;

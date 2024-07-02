@@ -323,9 +323,9 @@ void run_lfu(int* ref, int r_size, int f_size) {
             if(cnt[frms[j]] == lf_cnt) {
                 push(lf_q, j);
             }
-            printf("%d -> %d\t", frms[j], cnt[frms[j]]);
+            //printf("%d -> %d\t", frms[j], cnt[frms[j]]);
         }
-        printf("\n");
+        //printf("\n");
             
         if(lf_q->size == 1) {
             frms[lf_j] = ref[i];

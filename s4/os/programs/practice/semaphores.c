@@ -56,6 +56,7 @@ void *philosopher(void* arg) {
 
     thinking(phil_num);
     pick_up_forks(phil_num);
+    printf("\n");
     eating(phil_num);
     put_down_forks(phil_num);
 
