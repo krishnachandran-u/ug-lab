@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define DIM 10
+
+int store[DIM][DIM];
+
+void init_store() {
+    for (int i = 0; i < DIM; i++) {
+        for (int j = 0; j < DIM; j++) {
+            store[i][j] = rand()%100;
+            printf("%d  " , store[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+void seq() {
+    int dir[5][2];
+    printf("start | length");
+    for(int i = 0; i < 5; i++) {
+         
+    }
+}
+
+
+int main() {
+    srand(time(NULL));
+}

@@ -1,0 +1,276 @@
+#include <stdio.h>
+#include <limits.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#define SIZE 100
+
+typedef struct queue queue;
+
+int f;
+int* ref;
+int len;
+
+struct queue {
+    int f, r, size;
+    int a[SIZE];
+};
+
+bool get_queue() {
+    queue* q = (queue*)malloc(sizeof(queue));
+    q->f = q->r = q->size = 0;
+    return q;
+}
+
+bool is_empty(queue* q) {
+    return q->size == 0;
+}
+
+bool is_full(queue* q) {
+    return q->size == SIZE;
+}
+
+void enq(queue* q, int x) {
+    if (is_full(q)) {
+        exit(1);
+    }
+    q->a[q->r++] = x;
+    q->size++;
+    return;
+}
+
+void dq(queue* q) {
+    if (is_full(q)) {
+        exit(1);
+    }
+    q->f++;
+    q->size--;
+    return;
+}
+
+int front(queue* q) {
+    if (is_empty(q)) {
+        exit(1);
+    }
+    return q->a[q->f];
+}
+
+int rear(queue* q) {
+    if (is_empty(q)) {
+        exit(1);
+    }
+    return q->a[q->r - 1];
+}
+
+void delete_if_exists(queue* q, int x) {
+    for (int i = q->f; i < q->r ; i++) {
+        if (q->a[i] == x) {
+            for (int j = i; j < q->r; j++) {
+                q->a[j] = q->a[j + 1];
+            }
+            q->r--;
+            q->size--;
+            i--;
+        }
+    }
+    return;
+}
+
+void fifo() {
+    int hit = 0;
+    int miss = 0;
+
+    int* frames = (int*)malloc(f*sizeof(int));
+    for (int i = 0; i < f; i++) frames[i] = -1;
+
+    queue q;
+
+    for (int i = 0; i < len; i++) {
+        bool done = false;
+
+        if (!done) {
+            for (int j = 0; j < f; j++) {
+                if (frames[j] == ref[i]) {
+                    hit++;
+                    done = true;
+                    break;
+                }
+            }
+        }
+
+        if(!done) {
+            for (int j = 0; j < f; j++) {
+                if (frames[j] == -1) {
+                    miss++;
+                    frames[j] = ref[i];
+                    delete_if_exists(&q, ref[i]);
+                    enq(&q, ref[i]);
+                    done = true;
+                    break;
+                }
+                
+            }
+        }
+
+        if(!done) {
+            int fr = front(&q);
+            dq(&q);
+            for (int j = 0; j < f; j++) {
+                if(frames[j] == fr) {
+                    miss++;
+                    frames[j] = ref[i];
+                    delete_if_exists(&q, ref[i]);
+                    enq(&q, ref[i]);
+                    done = true;
+                    break;
+                }
+            }
+        }
+
+        for (int j = 0; j < f; j++) {
+            printf("%d  ", frames[i]);
+        }
+        printf("\n");
+    }
+    return;
+}
+
+void lru() {
+    int hit = 0;
+    int miss = 0;
+
+    int* frames = (int*)malloc(f*sizeof(int));
+    for (int i = 0; i < f; i++) frames[i] = -1;
+
+    queue q;
+
+    for (int i = 0; i < len; i++) {
+        bool done = false;
+
+        if (!done) {
+            for (int j = 0; j < f; j++) {
+                if (frames[j] == ref[i]) {
+                    hit++;
+                    delete_if_exists(&q, ref[i]);
+                    enq(&q, ref[i]);
+                    done = true;
+                    break;
+                }
+            }
+        }
+
+        if (!done) {
+            for (int j = 0; j < f; j++) {
+                if (frames[j] == -1) {
+                    miss++;
+                    frames[j] = ref[i];
+                    delete_if_exists(&q, ref[i]);
+                    enq(&q, ref[i]);
+                    done = true;
+                    break;
+                }
+                
+            }
+        }
+
+        if (!done) {
+            int fr = front(&q);
+            dq(&q);
+            for (int j = 0; j < f; j++) {
+                if (frames[j] == fr) {
+                    miss++;
+                    frames[j] = ref[i];
+                    delete_if_exists(&q, ref[i]);
+                    enq(&q, ref[i]);
+                    done = true;
+                    break;
+                }
+            }
+        }
+
+        for (int j = 0; j < f; j++) {
+            printf("%d  ", frames[i]);
+        }
+        printf(":   %d\n", ref[i]);
+    }
+    return;
+}
+
+void lfu() {
+    int hit = 0;
+    int miss = 0;
+
+    int* frames = (int*)malloc(f*sizeof(int));
+    for (int i = 0; i < f; i++) frames[i] = -1;
+
+    int freq[100];
+    for(int i = 0; i < 100; i++) freq[i] = 0;
+
+    for (int i = 0; i < len; i++) {
+        bool done = false;
+
+        if(!done) {
+            for (int j = 0; j < f; j++) {
+                if (frames[i] == ref[i]) {
+                    hit++;
+                    freq[ref[i]]++;
+                    done = true;
+                    break;
+                }
+            }
+        }
+
+        if(!done) {
+            for (int j = 0; j < f; j++) {
+                if (frames[j] == -1) {
+                    miss++; 
+                    frames[j] = ref[i];
+                    freq[ref[i]]++;
+                    done = true;
+                    break;
+                }
+            }
+        }
+
+        if(!done) {
+            int min_freq = INT_MAX;
+            int min_pos = -1;
+
+            for (int j = 0; j < 100; j++) {
+                if (freq[j] < min_freq) {
+                    min_freq = freq[j];
+                    min_pos = j;
+                }
+            }
+
+            for (int j = 0; j < f; j++) {
+               if(frames[j] == min_pos) {
+                   miss++;
+                   frames[j] = ref[i];
+                   freq[ref[i]]++;
+                   done = true;
+                   break;
+               }
+            }
+
+        }
+    }
+}
+
+int main() {
+    printf("Enter the number of frames: ");
+    scanf("%d", &f);
+    printf("Enter the length of ref string: ");
+    scanf("%d", &len);
+    ref = (int*)malloc(len*sizeof(int));
+    printf("Enter the sequence: \n");
+    for (int i = 0; i < len; i++) {
+        scanf("%d", &ref[i]); 
+    }
+
+    fifo();
+    lru();
+    lfu();
+
+    return 0;
+}
