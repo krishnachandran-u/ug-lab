@@ -84,6 +84,9 @@
         add bx, 0002h
         mov [si + bx], dx
         jmp after_swap
+
+    main endp
+    end main
         
         
         
