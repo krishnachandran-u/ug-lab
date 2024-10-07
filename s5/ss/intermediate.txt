@@ -1,0 +1,7 @@
+COPY    START  1000
+03E9 I        LDA    FIVE
+03EA J        ADD    TWO
+03EB K        STA    SUM
+03EE FIVE    WORD   5
+03F1 TWO     WORD   2
+03F4 SUM     RESW   103F4 SUM     RESW   1

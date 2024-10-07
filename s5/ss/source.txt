@@ -1,0 +1,7 @@
+COPY    START  1000
+I        LDA    FIVE
+J        ADD    TWO
+K        STA    SUM
+FIVE    WORD   5
+TWO     WORD   2
+SUM     RESW   1
