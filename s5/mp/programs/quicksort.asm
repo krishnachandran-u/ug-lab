@@ -31,9 +31,10 @@
     
     main endp
     
-    quicksort proc
-        pop ax
-        mov ret_addr, ax
+    quicksort proc 
+        jmp rearrange_stack
+        after_rearrange_stack:
+
         pop dx ;dx -> end
         mov tail, dx
         pop bx ;bx -> begin
@@ -56,14 +57,14 @@
             mov i, ax
             
             while_i_lt_tail:
-                jmp check_i_lt_tail: ;!NOT DEFINED
+                jmp check_i_lt_tail: 
                 
                 loop_i_lt_tail:
                     mov ax, pivot
                     mov bx, head
                     add bx, i
                     mov cx, [si + bx]
-                    cmp ax, cx
+                    cmp cx, ax
                     jae after_increment_cnt:
                     
                     mov ax, cnt
@@ -86,7 +87,7 @@
             
             mov bx, ax
             mov ax, cx
-            mov cx, ax
+            mov cx, bx
             
             mov bx, head
             mov [si + bx], ax
@@ -158,7 +159,7 @@
                 jmp while_i_lt_cnt_and_cnt_lt_j
                                 
             out_while_i_lt_cnt_and_cnt_lt_j:
-                    
+                          
             push_parameters:
             mov bx, head
             push bx
@@ -172,15 +173,13 @@
             call quicksort
             call quicksort    
             
-        return:
-            mov ax, ret_addr
-            push ax
+        return:           
             ret
             
         check_base_case:
             mov bx, head
+            add bx, 0002h
             mov dx, tail
-            sub dx, 0002h
             cmp bx, dx
             jae return   
             jmp recursive_case:
@@ -190,8 +189,8 @@
             add bx, i
             mov dx, tail
             cmp bx, dx
-            jae loop_i_lt_tail
-            jmp out_while_i_lt_tail
+            jae out_while_i_lt_tail
+            jmp loop_i_lt_tail
             
         check_i_lt_cnt_and_cnt_lt_j:
             check_i_lt_cnt_1:
@@ -248,6 +247,17 @@
                 jae out_if_i_lt_cnt_and_cnt_lt_j
                 
             jmp in_if_i_lt_cnt_and_cnt_lt_j
+            
+        rearrange_stack:
+            pop ax
+            pop bx
+            pop cx
+            
+            push ax
+            push cx
+            push bx
+            
+            jmp after_rearrange_stack:
                                              
     quicksort endp
     
