@@ -46,6 +46,7 @@ bool initialize_relocation(RelocationState *relocation_state) {
         fprintf(stderr, "Error: Invalid input for program starting address.\n");
         return false;
     }
+    relocation_state->program_start_address -= 2000;
 
     relocation_state->input_file = fopen(INPUT_FILENAME, "r");
     if (!relocation_state->input_file) {
