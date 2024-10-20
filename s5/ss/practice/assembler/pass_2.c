@@ -150,7 +150,7 @@ int main() {
             }
             sprintf(object_code, "%s%04X", opcode_hex, operand_addr);
             if (text_record_len + strlen(object_code) > 60) {
-                fprintf(object_prog_fp, "T^%06X^%02X^%s\n", parsed_intmd[i - 1].addr, text_record_len, text_record);
+                fprintf(object_prog_fp, "T^%06X^%02X%s\n", parsed_intmd[i - 1].addr, text_record_len, text_record);
                 text_record_len = 0;
                 text_record = (char*)malloc(LEN * sizeof(char));
             }
@@ -160,7 +160,7 @@ int main() {
         else if (strcmp(parsed_intmd[i].opcode, "WORD") == 0 || strcmp(parsed_intmd[i].opcode, "BYTE") == 0) {
             sprintf(object_code, "%06X", get_symbol_addr(parsed_intmd[i].label));
             if (text_record_len + strlen(object_code) > 60) {
-                fprintf(object_prog_fp, "T^%06X^%02X^%s\n", parsed_intmd[i - 1].addr, text_record_len, text_record);
+                fprintf(object_prog_fp, "T^%06X^%02X%s\n", parsed_intmd[i - 1].addr, text_record_len, text_record);
                 text_record_len = 0;
                 text_record = (char*)malloc(LEN * sizeof(char));
             }
@@ -169,7 +169,7 @@ int main() {
         }
         else if (strcmp(parsed_intmd[i].opcode, "RESW") == 0 || strcmp(parsed_intmd[i].opcode, "RESB") == 0) {
             if (text_record_len > 0) {
-                fprintf(object_prog_fp, "T^%06X^%02X^%s\n", parsed_intmd[i - 1].addr, text_record_len, text_record);
+                fprintf(object_prog_fp, "T^%06X^%02X%s\n", parsed_intmd[i - 1].addr, text_record_len, text_record);
                 text_record_len = 0;
                 text_record = (char*)malloc(LEN * sizeof(char));
             }
@@ -178,7 +178,7 @@ int main() {
         text_record_len += strlen(object_code);
     }
     if (text_record_len > 0) {
-        fprintf(object_prog_fp, "T^%06X^%02X^%s\n", parsed_intmd[intmd_len - 1].addr, text_record_len, text_record);
+        fprintf(object_prog_fp, "T^%06X^%02X%s\n", parsed_intmd[intmd_len - 1].addr, text_record_len, text_record);
     }
     fprintf(object_prog_fp, "E^%06X\n", parsed_intmd[0].addr);
 }
