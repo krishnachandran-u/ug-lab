@@ -84,13 +84,13 @@ bool search_symtab(char* symbol) {
 
 void write_intermediate_file() {
     for (int i = 0; i < src_len; i++) {
-        fprintf(intmd_fp, "0x%x^%s^%s^%s\n", parsed_src[i].addr, parsed_src[i].label, parsed_src[i].opcode, parsed_src[i].operand);
+        fprintf(intmd_fp, "%x^%s^%s^%s\n", parsed_src[i].addr, parsed_src[i].label, parsed_src[i].opcode, parsed_src[i].operand);
     }
 }
 
 void write_symtab() {
     for (int i = 0; i < symtab_len; i++) {
-        fprintf(symtab_fp, "%s^0x%x\n", parsed_symtab[i].symbol, parsed_symtab[i].addr);
+        fprintf(symtab_fp, "%s^%x\n", parsed_symtab[i].symbol, parsed_symtab[i].addr);
     }
 }
 
