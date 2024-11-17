@@ -1,124 +1,113 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stdbool.h>
-#include <errno.h>
+#include <string.h>
 
-#define MAX_RECORD_SIZE 10
-#define MAX_BITMASK_SIZE 12
-#define MAX_PROGRAM_NAME_SIZE 6
-#define INPUT_FILENAME "input.txt"
-#define OUTPUT_FILENAME "output.txt"
+#define LEN 100
 
-typedef struct {
-    FILE *input_file;
-    FILE *output_file;
-    int program_start_address;
-} RelocationState;
+const char* delim = "^ \n";
 
-bool initialize_relocation(RelocationState *relocation_state);
-void cleanup_relocation(RelocationState *relocation_state);
-bool process_object_file(RelocationState *relocation_state);
-bool process_header_record(FILE *input_file);
-bool process_text_record(RelocationState *relocation_state);
-void relocate_and_output_instruction(RelocationState *relocation_state, int current_address, int instruction_opcode, int instruction_operand, char relocation_bit);
+struct TextRecords {
+    char* object_code[LEN];
+    int addr;
+    int len;
+    int bitmask;
+} text_records[LEN];
 
-int main(void) {
-    RelocationState relocation_state = {0};
-    
-    if (!initialize_relocation(&relocation_state)) {
-        cleanup_relocation(&relocation_state);
-        return EXIT_FAILURE;
+FILE* object_prog_fp;
+
+char* object_prog[LEN];
+int object_prog_len = 0;
+
+int dec_to_bin(int n) {
+    int bin = 0;
+    while(n) {
+        bin = bin * 10 + n % 2;
+        n /= 2;
     }
-
-    if (!process_object_file(&relocation_state)) {
-        cleanup_relocation(&relocation_state);
-        return EXIT_FAILURE;
-    }
-
-    cleanup_relocation(&relocation_state);
-    return EXIT_SUCCESS;
+    return bin;
 }
 
-bool initialize_relocation(RelocationState *relocation_state) {
-    printf("Enter the program's starting address: ");
-    if (scanf("%d", &relocation_state->program_start_address) != 1) {
-        fprintf(stderr, "Error: Invalid input for program starting address.\n");
-        return false;
+void parse_object_prog() {
+    char line[LEN];
+    int i = 0;
+    while(fgets(line, LEN, object_prog_fp)) {
+        object_prog[i] = strdup(line);
+        i++;
     }
-    relocation_state->program_start_address -= 2000;
-
-    relocation_state->input_file = fopen(INPUT_FILENAME, "r");
-    if (!relocation_state->input_file) {
-        fprintf(stderr, "Error opening input file: %s\n", strerror(errno));
-        return false;
-    }
-
-    relocation_state->output_file = fopen(OUTPUT_FILENAME, "w");
-    if (!relocation_state->output_file) {
-        fprintf(stderr, "Error opening output file: %s\n", strerror(errno));
-        return false;
-    }
-
-    return true;
+    object_prog_len = i;
 }
 
-void cleanup_relocation(RelocationState *relocation_state) {
-    if (relocation_state->input_file) fclose(relocation_state->input_file);
-    if (relocation_state->output_file) fclose(relocation_state->output_file);
-}
+void load_text_records() {
+    for (int i = 1; i < object_prog_len - 1; i++) {
+        char* line = object_prog[i];
+        
+        char len_string[3];
+        len_string[0] = line[9];
+        len_string[1] = line[10];
+        len_string[2] = '\0';
 
-bool process_object_file(RelocationState *relocation_state) {
-    char record_type[MAX_RECORD_SIZE];
+        int len = strtoul(len_string, NULL, 16); 
+        text_records[i - 1].len = len;
 
-    while (fscanf(relocation_state->input_file, "%s", record_type) == 1 && strcmp(record_type, "E") != 0) {
-        if (strcmp(record_type, "H") == 0) {
-            if (!process_header_record(relocation_state->input_file)) return false;
-        } else if (strcmp(record_type, "T") == 0) {
-            if (!process_text_record(relocation_state)) return false;
-        } else {
-            fprintf(stderr, "Error: Unknown record type '%s'\n", record_type);
-            return false;
+        char bitmask_string[4];
+        bitmask_string[0] = line[12];
+        bitmask_string[1] = line[13];
+        bitmask_string[2] = line[14];
+        bitmask_string[3] = '\0';
+
+        int bitmask = strtoul(bitmask_string, NULL, 16);
+        text_records[i - 1].bitmask = bitmask;
+        //sprintf(text_records[i - 1].bitmask, "%012d", dec_to_bin(bitmask));
+        
+        char* ptr = line + 16; //T^001015^2A^CC0^040000^0C1015^001015^181018^0C101B^10101B^000000
+        char* token = strtok(ptr, delim);
+        int j = 0;
+        while(token != NULL) {
+            text_records[i - 1].object_code[j] = strdup(token);
+            token = strtok(NULL, delim);
+            j++;
         }
     }
-
-    return true;
 }
 
-bool process_header_record(FILE *input_file) {
-    char program_name[MAX_PROGRAM_NAME_SIZE], program_size[MAX_RECORD_SIZE];
-    if (fscanf(input_file, "%s %s", program_name, program_size) != 2) {
-        fprintf(stderr, "Error: Invalid header record format\n");
-        return false;
-    }
-    return true;
-}
+void inc_addrs(const int new_base_addr) {
+    for (int i = 0; i < object_prog_len - 2; i++) {
+        char bitmask_string[13];
+        sprintf(bitmask_string, "%012d", dec_to_bin(text_records[i].bitmask));
+        for (int j = 0; j < text_records[i].len/6; j++) {
+            char* addr_object_code_string = text_records[i].object_code[j] + 2;
+            char opcode[3];
+            opcode[0] = text_records[i].object_code[j][0];
+            opcode[1] = text_records[i].object_code[j][1];
+            opcode[2] = '\0';
 
-bool process_text_record(RelocationState *relocation_state) {
-    int text_start_address, instruction_opcode, instruction_operand;
-    char relocation_bitmask[MAX_BITMASK_SIZE];
-
-    if (fscanf(relocation_state->input_file, "%d %s", &text_start_address, relocation_bitmask) != 2) {
-        fprintf(stderr, "Error: Invalid text record format\n");
-        return false;
-    }
-
-    text_start_address += relocation_state->program_start_address;
-
-    for (size_t i = 0; i < strlen(relocation_bitmask); i++) {
-        if (fscanf(relocation_state->input_file, "%d %d", &instruction_opcode, &instruction_operand) != 2) {
-            fprintf(stderr, "Error: Invalid instruction format\n");
-            return false;
+            int addr_object_code = strtoul(addr_object_code_string, NULL, 16);
+            int new_addr = new_base_addr + addr_object_code;
+            char new_addr_string[5];
+            sprintf(new_addr_string, "%04X", new_addr);
+            char new_object_code[7];
+            sprintf(new_object_code, "%s%s", opcode, new_addr_string);
+            text_records[i].object_code[j] = strdup(new_object_code);
         }
-        relocate_and_output_instruction(relocation_state, text_start_address, instruction_opcode, instruction_operand, relocation_bitmask[i]);
-        text_start_address += 3;  // Assuming 3-byte instructions
     }
-
-    return true;
 }
 
-void relocate_and_output_instruction(RelocationState *relocation_state, int current_address, int instruction_opcode, int instruction_operand, char relocation_bit) {
-    int relocated_operand = (relocation_bit == '1') ? instruction_operand + relocation_state->program_start_address : instruction_operand;
-    fprintf(relocation_state->output_file, "%d\t%d%d\n", current_address, instruction_opcode, relocated_operand);
-    printf("%d\t%d%d\n", current_address, instruction_opcode, relocated_operand);
+void print_object_codes() {
+    for (int i = 0; i < object_prog_len - 2; i++) {
+        for (int j = 0; j < text_records[i].len/6; j++) {
+            printf("%-6s\n", text_records[i].object_code[j]);
+        }
+    }
+}
+
+
+int main() {
+    object_prog_fp = fopen("object_prog.txt", "r");
+    parse_object_prog();
+    load_text_records();        
+    inc_addrs(0x6000);
+    print_object_codes();
+
+    return 0; 
 }
